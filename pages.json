@@ -1,0 +1,149 @@
+{
+	"pages": [
+		{
+			"path": "pages/jumpPage/jumpPage",
+			"style": {
+				"navigationBarTitleText": "我的跳转",
+				"navigationStyle":"custom",
+				"app-plus":{
+					"titleNView":true
+				}
+			}
+		},
+		{
+			"path": "pages/index/indexWeb",
+			"style": {
+				"navigationBarTitleText": "变化发现",
+				"navigationStyle":"custom",
+				"app-plus":{
+					"titleNView":false
+				}
+			}
+		},
+		{
+			"path": "pages/index/mine",
+			"style": {
+				"navigationBarTitleText": "我的",
+				"navigationStyle":"custom",
+				"app-plus":{
+					"titleNView":false
+				}
+			}
+		},
+		{
+			"path": "pages/index/mineSuggest",
+			"style": {
+				"navigationBarTitleText": "应用建议",
+				"navigationStyle":"custom",
+				"app-plus":{
+					"titleNView":false
+				}
+			}
+		},
+		{
+			"path": "pages/index/mineInfo",
+			"style": {
+				"navigationBarTitleText": "我的消息",
+				"navigationStyle":"custom",
+				"app-plus":{
+					"titleNView":false
+				}
+			}
+		},
+		{
+			"path": "pages/index/mineMoney",
+			"style": {
+				"navigationBarTitleText": "我的钱包",
+				"navigationStyle":"custom",
+				"app-plus":{
+					"titleNView":false
+				}
+			}
+		},
+		{
+			"path": "pages/index/info",
+			"style": {
+				"navigationBarTitleText": "消息",
+				"navigationStyle":"custom",
+				"app-plus":{
+					"titleNView":false
+				}
+			}
+		},
+		{
+			"path": "pages/fxbhbtn/fxbhIndex",
+			"style": {
+				"navigationBarTitleText": "发现变化",
+				"navigationStyle":"custom",
+				"app-plus":{
+					"titleNView":true
+				}
+			}
+		},
+		{
+			"path": "pages/fxbhbtn/fxbhIndexErr",
+			"style": {
+				"navigationBarTitleText": "发现变化/纠错",
+				"navigationStyle":"custom",
+				"app-plus":{
+					"titleNView":true
+				}
+			}
+		},
+		{
+			"path": "pages/fxbhbtn/fxbhConten",
+			"style": {
+				"navigationBarTitleText": "发现变化",
+				"navigationStyle":"custom",
+				"app-plus":{
+					"titleNView":true
+				}
+			}
+		},
+		{
+			"path": "pages/fxbhbtn/drawIndex",
+			"style": {
+				"navigationBarTitleText": "发现变化",
+				"navigationStyle":"custom",
+				"app-plus":{
+					"titleNView":true
+				}
+			}
+		},
+		{
+			"path": "pages/taskbtn/taskIndex",
+			"style": {
+				"navigationBarTitleText": "领取任务",
+				"navigationStyle":"custom",
+				"app-plus":{
+					"titleNView":true
+				}
+			}
+		}
+	    ,{
+            "path" : "pages/fxbhbtn/formContent/formContent",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+    ],
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "变化发现",
+		"navigationBarBackgroundColor": "#007AFF",
+		"backgroundColor": "#FFFFFF"
+	},
+	"condition" : { //模式配置，仅开发期间生效
+		"current": 0, //当前激活的模式(list 的索引项)
+		"list": [
+			{
+				"name": "", //模式名称
+				"path": "", //启动页面，必选
+				"query": "" //启动参数，在页面的onLoad函数里面得到
+			}
+		]
+	}
+}

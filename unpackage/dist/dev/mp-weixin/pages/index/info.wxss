@@ -1,0 +1,5 @@
+
+.myInfocontent{text-align: left;padding: 10rpx 50px;font-size:14px;color: red;}
+/* @import url("../../components/bhfx-login/css/icon.css"); */
+/* @import url("./css/main.css"); */
+

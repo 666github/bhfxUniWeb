@@ -1,0 +1,87 @@
+uni-page-head{display: none!important;}
+	uni-page-body{    
+		/* height: calc(100% - 44px);
+		height: calc(100% - 44px - constant(safe-area-inset-top));
+		height: calc(100% - 44px - env(safe-area-inset-top)); */
+		height: 100%;
+	}
+	.container {
+		/* padding: 20px; */
+		font-size: 14px;
+		line-height: 24px;
+		width: 100%;
+		height: 100%;
+	}
+	.mymap{
+		height: calc(100% - 44px);
+		height: calc(100% - 44px - constant(safe-area-inset-top));
+		height: calc(100% - 44px - env(safe-area-inset-top));		
+		}
+	.bottomBar {
+		position: fixed;
+		display: flex;
+		justify-content: space-around;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 44px;
+		line-height: 44px;
+	}
+	.navBar{position: absolute;left: 0;top: 20px;color: #ffffff;opacity: 0.7;}
+	.navtop{padding: 5px 10px;background-color:#40bbf3;margin-bottom: 10px;border-radius: 2px;}
+	/* 右侧工具 */
+	.rightToll{position: absolute;right: 5px;top: 20px;}
+	.tollone{height: 72px;position: relative;}
+	.tolltwo{height: 100px;position: relative;margin: 5px 0;}
+	.tollthree{height: 72px;position: relative;}
+	.tollfour{height: 200px;position: relative;}
+	.uni-list{width: 100px;border: solid 1rpx #40BBF3;border-radius: 5px;padding-right: 25px;}
+	.uni-list-cell {display: flex;justify-content: flex-start;padding: 5px 0;}
+	.uni-list radio,.uni-list checkbox{transform:scale(0.8)}
+	.tollIcon{width: 24px;height: 24px;position: absolute;right: 5px;top: 50%;margin-top: -12px;background-color: #FFFFFF;border-radius: 50% 50%;background-repeat: no-repeat;background-position: center;}
+	.layersControl{background-image: url(@/static/layers.svg);}
+	.datassControl{background-image: url(@/static/datas.svg);}
+	.localControl{background-image: url(@/static/closer.svg);}
+	.helpControl{background-image: url(@/static/help.svg);}
+	.uni-modal__bd{text-align: right;}
+	/* 我的 */
+	.myInfocontent{text-align: left;padding: 10rpx 50px;font-size:14px;color: red;}
+	.personalCenter{height: 280rpx;background-color:#c8d5ec;color: #FFFFFF;}
+	.personalNavwrap{padding: 40rpx;margin-top: -140rpx;}
+	.personalNav {
+		background-color: #FFFFFF;
+		padding: 5px;
+		/* border: solid 1px red; */
+		box-shadow:2px 2px 5px gray;
+		display: flex;
+		justify-content: space-around;
+		/* align-items:center; */
+		/* height: 124px; */
+		text-align: center;
+		border-top: solid 1px lightgray;
+	}
+	.bottomBtns{width:140rpx;height: 140rpx;border-radius: 50%;background-size: 60% 60%;background-repeat: no-repeat;background-position: center center;}
+	.personalNav .bottomBtns1{background-image: url('@/static/appsuggest.svg');background-color:#7dc5eb;}
+	.personalNav .bottomBtns2{background-image: url('@/static/myinfos.svg');background-color:#ecd9a3;}
+	.personalNav .bottomBtns3{background-image: url('@/static/mymoney.svg');background-color:#f38989;}
+	.personalCenter{display: flex;justify-content: flex-start;}
+	.personal{background-image: url('@/static/personal.svg');background-size: 90% 90%;}
+	.personalInfo{line-height: 60rpx;}
+	.bottomBtn{padding: 0 40rpx;position: absolute;bottom: 10px;right: 0;left: 0;}
+	.outBtn{background-color:#c8d5ec;}
+	.unilistcellName{background-color: white;border-radius: 2px;padding: 0 2px;}
+	/* --- */
+	.lists{list-style: none;padding: 5px;}
+	.lists li{border-bottom: solid 1px lightgray;box-shadow:1px 1px 3px lightgray;background-color:#778da9;color: #FFFFFF;margin-bottom: 5px;padding: 5px;}
+	.myinfs{position: absolute;left: 0 ;right: 0;top: 0;bottom: 0;background-color: #FFFFFF;z-index: 1;}
+	.personalCenter2{display: flex;justify-content: flex-start;line-height:40px;}
+	.bottomBtns2{	
+		border-radius: 50%;
+		background-size: 90% 90%;
+		background-repeat: no-repeat;background-position: center center;	
+	}
+	.personal2{background-image: url('@/static/personal.svg');width:40px;height: 40px;}
+	.personalInfo2{line-height: 40px;}
+	.tastTab{display: flex;justify-content: center;margin-bottom:5px;}
+	.tastTab>span{padding: 5px 10px;margin: 0 10px;cursor: pointer;}
+	.tastTitle{border-bottom:solid 2px #7373c3;color:#9191ea}

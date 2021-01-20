@@ -1,0 +1,65 @@
+uni-page-head{display: none!important;}
+	uni-page-body{    
+		/* height: calc(100% - 44px);
+		height: calc(100% - 44px - constant(safe-area-inset-top));
+		height: calc(100% - 44px - env(safe-area-inset-top)); */
+		height: 100%;
+	}
+	.container {
+		/* padding: 20px; */
+		font-size: 14px;
+		line-height: 24px;
+		width: 100%;
+		height: 100%;
+	}
+	.mymap{
+		/* height: calc(100% - 288px);
+		height: calc(100% - 288px - constant(safe-area-inset-top));
+		height: calc(100% - 288px - env(safe-area-inset-top));	 */	
+		height: calc(100% - 50%);
+		height: calc(100% - 50% - constant(safe-area-inset-top));
+		height: calc(100% - 50% - env(safe-area-inset-top));	
+		}
+	.bottomBar {
+		position: fixed;
+		/* display: flex; */
+		/* justify-content: space-around; */
+		align-items:center;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		/* height: 288px; */
+		height:50%;
+		/* line-height: 144px; */
+		text-align: center;
+		/* overflow-y: auto; */
+	}
+	.bottomBtns{width:140rpx;height: 140rpx;line-height:140rpx;border-radius: 50%;background-color:#7dc5eb;background-size: 80% 80%;background-repeat: no-repeat;background-position: center center;}
+	.taskItem{display: flex;justify-content: space-between;padding: 0 5px;border-bottom: solid 1px lightgray;}
+	.itemMoney,.itemName{font-size: 16px; color:red;padding: 5px 0;}
+	.itemName{text-align: left;padding-left: 25px;}
+	.getTask,.doTask{width: 80px;padding: 0;margin: 0 5px;}
+	.naviTo{padding-left: 25px;text-align: left;
+	background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAC10lEQVQ4T52UTWhcVRzFf2cmadJGmbyHFSwkosnEhaSLFqQU/NpoEaxiMAhKFGoTzaRKVCxdKHUhgvGLmPcgoqQUlai1koJdVBAVvzaKqKt5k4gRgwuZSdKm2EzmHUkwkLZTFO/2nvvj/s8594r/scKx5Hqk/ZYfMt5s9JL+M+eV3za3Np/rFe4X7LZJLWYEHbaX/hUUxDPbodYv3Ae63HjG5khKtpQlfdtwXPJd9UFH/2gJT5++D7kfdAP2EuJYiibmB/OfB+PT7dTSH7FPAj8Inj0PlItLOzNO9wseQGoxfCUzUSb3HoUrz6zZMD63JVhZ+haoVmrsDrJ6CvlJMe7GsFZ60OYxiW7sOaOjNfTWYqGzdKGHYVT80OKWc7Xm7rMH2ufCKDmMeFRBlJxAvl1oymiickXHKXpVqxdCGCdP2IzYvnV+qOuLVU0QJ8/L9CmMi4uYT9Llxn3zw9fMXyrF1rHiTcroU1kHy4XOl9d1QVwcwfQoiIpPS3oOXDWKa5uaX1x8uK28Ebjl9dltTdm/fpL5rFzo6tm4F0al11C6Z83sy0aTrY0NDAsPYTUYD1cKXeNrB0aTpiDL10BjpaFlFwPbzm4EBVESATeel1owPp1jJR0B+lJtumph8OpKEBXfRbqDbGZ7ZaBj9sLRgyh5A9h5UY/CqNSGPJum3O0Md2bMvmo2e++ZR649Vj+A4hHQdXULGUbF31NpErM3IzqN/0yt+xcK+VMX3ShO3gG31QUFcTIp2AHkbQ55tSemXfBquaHzIAOqrgPDOHkfO6wLao1LBzJ41Ktq6SSp9xhPSdoL/jnNqmdhID/9T48+AprqgnJjyY5Mxt8ZllcFTtU7P5SfCuNkF/g4KAc8Xh7MvxlExY+RVuo/2sPOBFtLVcu1TKqby0P5b9ZHycW/BlkvTyJuM5zA7kb68pLfSC5KXkB8vzCY/6BeWkGcHJJ5BvFLlew9fwOSBjckRkLkjwAAAABJRU5ErkJggg==") no-repeat;}
+	/* .taskItemChild{display: flex;flex-direction: column;} */
+	/* 右侧工具 */
+	.rightToll{position: absolute;right: 5px;top: 20px;}
+	.tollone{height: 72px;position: relative;}
+	.tolltwo{height: 100px;position: relative;margin: 5px 0;}
+	.tollthree{height: 72px;position: relative;}
+	.tollfour{height: 200px;position: relative;}
+	.uni-list{width: 100px;border: solid 1rpx #40BBF3;border-radius: 5px;padding-right: 25px;}
+	.uni-list-cell {display: flex;justify-content: flex-start;padding: 5px 0;}
+	.uni-list radio,.uni-list checkbox{transform:scale(0.8)}
+	.tollIcon{width: 24px;height: 24px;position: absolute;right: 5px;top: 50%;margin-top: -12px;background-color: #FFFFFF;border-radius: 50% 50%;background-repeat: no-repeat;background-position: center;}
+	.layersControl{background-image: url(@/static/layers.svg);}
+	.datassControl{background-image: url(@/static/datas.svg);}
+	.localControl{background-image: url(@/static/closer.svg);}
+	.helpControl{background-image: url(@/static/help.svg);}
+	/* 领取任务 */
+	/* .doTaskDiv{height: 140rpx;} */
+	.getTaskTitle{background-color:#03a9f4;height: 60rpx;color: #FFFFFF;line-height: 60rpx;}
+	.haveGotTask{margin: 30rpx;box-shadow: 2px 2px 5px gray;padding: 5px 2px;}
+	.doTaskTime{color:#03a9f4;}
+	.doTask{background-color:#03a9f4;}
+	.unilistcellName{background-color: white;border-radius: 2px;padding: 0 2px;}
