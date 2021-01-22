@@ -1947,7 +1947,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;function _defineProperty(obj, key, value) {if 
 
 /***/ }),
 
-/***/ 127:
+/***/ 143:
 /*!***************************************************************************!*\
   !*** E:/zlj/Project/变化发现/bhfxVX/bhfxUniWeb/components/uni-icons/icons.js ***!
   \***************************************************************************/
@@ -8464,7 +8464,7 @@ internalMixin(Vue);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.appLoginWx = appLoginWx;exports.request = request;exports.request2 = request2;function appLoginWx(resolve, reject) {//微信授权验证			
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.appLoginWx = appLoginWx;exports.request = request;exports.request2 = request2;exports.VxgetLocation = VxgetLocation;function appLoginWx(resolve, reject) {//微信授权验证			
 
   uni.getProvider({
     service: 'oauth',
@@ -8502,7 +8502,7 @@ internalMixin(Vue);
 
 }
 // 发送请求
-var baseUrl = "http://bhfx.hanwuqi.xyz";
+var baseUrl = "http://bhfx.miyanoshiho.com";
 function request(options) {var
   url = options.url,data = options.data,method = options.method,header = options.header;
   data = data || {};
@@ -8525,7 +8525,7 @@ function request(options) {var
 
 }
 
-var baseUrl2 = "http://192.168.1.120:56273";
+var baseUrl2 = "http://bhfxxcx.natapp1.cc";
 function request2(options) {var
   url = options.url,data = options.data,method = options.method,header = options.header;
   data = data || {};
@@ -8546,6 +8546,40 @@ function request2(options) {var
 
   });
 
+
+}
+function VxgetLocation(_this) {
+  _this.$jweixin.getLocation({
+    type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+    success: function success(res) {
+      var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+      var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+      var speed = res.speed; // 速度，以米/每秒计
+      var accuracy = res.accuracy; // 位置精度								
+      _this.longitudeData = Number(longitude);
+      _this.latitudeData = Number(latitude);
+      var updatelayer = _this.map.layers.items[4]; //标记图层
+      _this.view.center = [_this.longitudeData, _this.latitudeData];
+      var updateEdit = {
+        updateFeatures: [{
+          "geometry": {
+            type: 'point',
+            longitude: _this.longitudeData, // 经度116.29845,39.95933
+            latitude: _this.latitudeData // 纬度
+          },
+          "attributes": {
+            "ObjectID": updatelayer.source.items[0].attributes.ObjectID } }] };
+
+
+
+      updatelayer.applyEdits(updateEdit).
+      then(function (editsResult) {
+        console.log(editsResult, _this.latitudeData, _this.longitudeData);
+      });
+    },
+    fail: function fail(err) {
+      console.log(JSON.stringify(err));
+    } });
 
 }
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))

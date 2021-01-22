@@ -37,11 +37,12 @@ uni-page-body{
 .tollone{height: 72px;position: relative;}
 .tolltwo{height: 100px;position: relative;margin: 5px 0;}
 .tollthree{height: 72px;position: relative;}
-.tollfour{height: 200px;position: relative;}
+	/* .tollfour{height: 200px;position: relative;} */
+.tollfour{height: 100px;position: relative;margin: 5px 0;}
 .uni-list{width: 100px;border: solid 1rpx #40BBF3;border-radius: 5px;padding-right: 25px;}
 .uni-list-cell {display: -webkit-box;display: -webkit-flex;display: flex;-webkit-box-pack: start;-webkit-justify-content: flex-start;justify-content: flex-start;padding: 5px 0;}
 .uni-list radio,.uni-list checkbox{-webkit-transform:scale(0.8);transform:scale(0.8)}
-.tollIcon{width: 18px;height: 18px;position: absolute;right: 5px;top: 50%;margin-top: -9px;}
+.tollIcon{width: 24px;height: 24px;position: absolute;right: 5px;top: 50%;margin-top: -12px;background-color: #FFFFFF;border-radius: 50% 50%;background-repeat: no-repeat;background-position: center;}
 .layersControl{background-image: url(../../static/img/layers.97ee6644.svg);}
 .datassControl{background-image: url(../../static/img/datas.c1312025.svg);}
 .localControl{background-image: url(../../static/img/closer.c7a54b47.svg);}
@@ -75,4 +76,20 @@ uni-page-body{
 .personalInfo{line-height: 60rpx;}
 .bottomBtn{padding: 0 40rpx;position: absolute;bottom: 10px;right: 0;left: 0;}
 .outBtn{background-color:#c8d5ec;}
+.unilistcellName{background-color: white;border-radius: 2px;padding: 0 2px;}
+	/* --- */
+.lists{list-style: none;padding: 5px;}
+.lists ._li{border-bottom: solid 1px lightgray;box-shadow:1px 1px 3px lightgray;background-color:#778da9;color: #FFFFFF;margin-bottom: 5px;padding: 5px;}
+.myinfs{position: absolute;left: 0 ;right: 0;top: 0;bottom: 0;background-color: #FFFFFF;z-index: 1;}
+.personalCenter2{display: -webkit-box;display: -webkit-flex;display: flex;-webkit-box-pack: start;-webkit-justify-content: flex-start;justify-content: flex-start;line-height:40px;}
+.bottomBtns2{	
+		border-radius: 50%;
+		background-size: 90% 90%;
+		background-repeat: no-repeat;background-position: center center;
+}
+.personal2{background-image: url(../../static/img/personal.d815064b.svg);width:40px;height: 40px;}
+.personalInfo2{line-height: 40px;}
+.tastTab{display: -webkit-box;display: -webkit-flex;display: flex;-webkit-box-pack: center;-webkit-justify-content: center;justify-content: center;margin-bottom:5px;}
+.tastTab>._span{padding: 5px 10px;margin: 0 10px;cursor: pointer;}
+.tastTitle{border-bottom:solid 2px #7373c3;color:#9191ea}	
 

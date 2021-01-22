@@ -158,7 +158,6 @@ var _this;var _default =
   onLoad: function onLoad() {
     _this = this;
     var urlParam = window.location.href.split('?')[1].split('&'); //获取网页ip,token
-    console.log(9, urlParam);
     this.token = urlParam[0].split("=")[1];
     this.phone = urlParam[1].split("=")[1];
     uni.setStorageSync('token', this.token);

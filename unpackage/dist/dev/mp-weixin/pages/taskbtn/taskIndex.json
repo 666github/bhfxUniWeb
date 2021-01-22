@@ -1,5 +1,7 @@
 {
   "navigationBarTitleText": "领取任务",
   "navigationStyle": "custom",
-  "usingComponents": {}
+  "usingComponents": {
+    "task-road": "/pages/taskbtn/taskRoad"
+  }
 }

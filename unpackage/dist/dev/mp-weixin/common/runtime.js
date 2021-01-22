@@ -109,7 +109,7 @@
 /******/ 		if(installedCssChunks[chunkId]) promises.push(installedCssChunks[chunkId]);
 /******/ 		else if(installedCssChunks[chunkId] !== 0 && cssChunks[chunkId]) {
 /******/ 			promises.push(installedCssChunks[chunkId] = new Promise(function(resolve, reject) {
-/******/ 				var href = "" + ({"components/uni-collapse-item/uni-collapse-item":"components/uni-collapse-item/uni-collapse-item","components/uni-collapse/uni-collapse":"components/uni-collapse/uni-collapse","components/uni-icons/uni-icons":"components/uni-icons/uni-icons"}[chunkId]||chunkId) + ".wxss";
+/******/ 				var href = "" + ({"components/uni-collapse-item/uni-collapse-item":"components/uni-collapse-item/uni-collapse-item","components/uni-collapse/uni-collapse":"components/uni-collapse/uni-collapse","components/uni-icons/uni-icons":"components/uni-icons/uni-icons","pages/taskbtn/taskRoad":"pages/taskbtn/taskRoad"}[chunkId]||chunkId) + ".wxss";
 /******/ 				var fullhref = __webpack_require__.p + href;
 /******/ 				var existingLinkTags = document.getElementsByTagName("link");
 /******/ 				for(var i = 0; i < existingLinkTags.length; i++) {

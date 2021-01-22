@@ -13,7 +13,7 @@ var _jweixinModule = _interopRequireDefault(__webpack_require__(/*! jweixin-modu
 
 _vue.default.config.productionTip = false;
 _vue.default.prototype.$jweixin = _jweixinModule.default; //映射到全局
-// Vue.prototype.$urlApi= "http://bhfx.hanwuqi.xyz/api/";//配置baseurl
+// Vue.prototype.$urlApi= "bhfx.miyanoshiho.com/api/";//配置baseurl
 _App.default.mpType = 'app';
 var app = new _vue.default(_objectSpread({},
 _App.default));

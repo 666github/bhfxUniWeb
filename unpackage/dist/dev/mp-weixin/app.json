@@ -11,7 +11,9 @@
     "pages/fxbhbtn/fxbhIndexErr",
     "pages/fxbhbtn/fxbhConten",
     "pages/fxbhbtn/drawIndex",
-    "pages/taskbtn/taskIndex"
+    "pages/taskbtn/taskIndex",
+    "pages/fxbhbtn/formContent/formContent",
+    "pages/taskbtn/taskContent/taskContent"
   ],
   "subPackages": [],
   "window": {
@@ -25,6 +27,5 @@
       "desc": "你的位置信息将用于小程序位置接口的效果展示"
     }
   },
-  "usingComponents": {},
-  "sitemapLocation": "sitemap86.json"
+  "usingComponents": {}
 }

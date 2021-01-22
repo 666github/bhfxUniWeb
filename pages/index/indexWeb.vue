@@ -438,7 +438,7 @@
 						  outFields: ["*"],
 						  popupTemplate: _this.template,
 						});
-						layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除
+						// layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除
 						map.add(layerfeaturePoi);
 						// const layerfeatureHouse = new FeatureLayer({
 						//    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
@@ -451,12 +451,11 @@
 						// map.addMany([layerfeaturePoi,layerfeatureHouse,layerfeatureRoad]);						
 						this.view.when(()=>{
 							setTimeout(()=>{
-								document.querySelector('.esri-ui').style.width="70%";
-								// let esriPopup=document.querySelector('.esri-popup');
+								// document.querySelector('.esri-ui').style.width="70%";
 								let esriUI=document.querySelector('.esri-ui').offsetHeight;
 								let esriPopup=document.querySelector('.esri-popup');
-								esriPopup.style.height='275px';
-								esriPopup.style.marginTop=(esriUI - 275)+'px';
+								esriPopup.style.height='245px';
+								esriPopup.style.marginTop=(esriUI - 245)+'px';
 								esriPopup.onclick=function(event){
 									let classArr=event.target.classList;
 									if(classArr.length>1){
@@ -501,7 +500,24 @@
 											})
 											_this.map.layers.items[5].popupTemplate=_this.template2;//固定模板
 										}											
-									})								
+									})
+									let esriUI=document.querySelector('.esri-ui');
+									esriUI.style.display='none';
+									setTimeout(()=>{											
+										let popupcontentKey=document.getElementsByClassName('esri-feature-fields__field-header');
+										let popupcontentVal=document.getElementsByClassName('esri-feature-fields__field-data');
+										popupcontentKey.forEach((item,index)=>{
+											if(index==0||index==1){
+												item.style.display='none';
+											}
+										});
+										popupcontentVal.forEach((item,index)=>{
+											if(index==0||index==1){
+												item.style.display='none';
+											}
+										});
+										esriUI.style.display='block';
+									},600);
 								}
 							})
 						})

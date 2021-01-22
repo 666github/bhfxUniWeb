@@ -129,6 +129,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/taskbtn/taskContent/taskContent",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",

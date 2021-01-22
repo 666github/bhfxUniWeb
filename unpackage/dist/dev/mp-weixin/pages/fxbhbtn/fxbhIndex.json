@@ -1,5 +1,7 @@
 {
   "navigationBarTitleText": "发现变化",
   "navigationStyle": "custom",
-  "usingComponents": {}
+  "usingComponents": {
+    "form-content": "/pages/fxbhbtn/formContent/formContent"
+  }
 }

@@ -63,3 +63,18 @@ uni-page-head{display: none!important;}
 	.doTaskTime{color:#03a9f4;}
 	.doTask{background-color:#03a9f4;}
 	.unilistcellName{background-color: white;border-radius: 2px;padding: 0 2px;}
+	/*  */
+	.bhfxIndex{padding: 0 5px;}
+	.phototitle{font-weight: bold;padding:0 0 5px 0;}
+	.cameraDiv{height: 150px;width: 100%;display: flex;justify-content:space-around;}
+	.formDiv{margin: 5px 0;border-bottom: solid 1px lightgray;padding: 5px 0;}
+	.formDiv2{display: flex;justify-content: flex-start;}
+	.cameraChild{width: 33.33%;}
+	.cameraImg{width:100%;height:100%;border: solid 1px lightgray;}
+	.radioLabel{margin: 0 5px;}
+	.radioColor{color: gray;}
+	.formTextarea{width: 100%;height: 150rpx;background: lightgray;}
+	.tastTab{margin: 10px 0;}
+	.tastTab>span{padding: 5px 10px;margin: 0 10px;cursor: pointer;}
+	.tastTitle{border-bottom: solid 2px blue;color:#9191ea}
+	.tastContent,.doTaskDiv{height: calc(100% - 44px);overflow-y: auto;}

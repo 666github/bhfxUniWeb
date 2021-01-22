@@ -34,7 +34,7 @@
 					<view class="localControl tollIcon" @click="localtionControl"></view>
 				</view>
 				<view class="tollfour" v-show="!showPageThree">
-					<view class="helpControlerr tollIcon" @click="helpControlerr"></view>
+					<view class="helpControlerr tollIcon"></view>
 				</view>
 				<view class="tollsix" v-show="showPageThree">
 					<view class="clearControl tollIcon" @click="drawEventClear"></view>
@@ -67,8 +67,23 @@
 			</view>
 		</view>
 		<!-- 修改本图形 -->
-		<view class="modifyOwn" v-show="popupShow&&subuserShow&&checkstateShow" @click="modifyProp">修改</view>
+		<view class="modifyOwn" v-show="popupShow2&&subuserShow&&checkstateShow" @click="modifyProp">修改</view>
+		<view class="modifyOwn" v-show="popupShow2&&!subuserShow&&checkstateShowerr" @click="helpControlerr">纠错</view>
 		<!-- dierye -->
+		<!-- <formContent v-show="!showPageOne" :formdata="formdata" :imgfilesNew="imgfilesNew" :radios="radios" :errShow="errShow" :current="current" :imgUrl="imgUrl">
+			<radio-group @change="radioerrType" v-show='errShow' slot="typeRadio">
+				<label v-for="(item,index) in radios" class="radioLabel">
+					<radio :value="item.radioval" :key="item.id" :checked="index==current" /><text>{{item.radioval}}</text>
+				</label>
+			</radio-group>
+			<view class="formDiv" @click="drawRange" slot="huizhi">
+				<b class="drawIcon">绘制范围：</b>
+			</view>
+			<view class="submitBtns" slot="tijiao">
+				<button class="submitBtn" type="primary" @click="submitImgs">提交</button>
+				<button class="submitBtn" type="primary" @click="submitCancel">取消</button>
+			</view>
+		</formContent> -->
 		<view class="bhfxIndex" v-show="!showPageOne">
 			<view class="phototitle">拍照</view>
 			<view class="cameraDiv">
@@ -98,7 +113,6 @@
 			<view class="formDiv" style="padding-left: 80px;">
 				前期：
 				<select id="selectOne" v-model="formdata.BHBEFORE">
-					<!-- @change="selectOne" -->
 				  <option value =""></option>
 				  <option value ="建筑">建筑</option>
 				  <option value ="道路">道路</option>
@@ -108,7 +122,6 @@
 				</select>
 				后期：
 				<select id="selectTwo" v-model="formdata.BHAFTER">
-					<!-- @change="selectTwo" -->
 				  <option value =""></option>
 				  <option value ="建筑">建筑</option>
 				  <option value ="道路">道路</option>
@@ -122,22 +135,21 @@
 			</view>
 			<view class="formDiv">
 				<view><b>变化详情：（大于15字）</b></view>
-				<textarea  placeholder="请输入您的详细描述" class="formTextarea" v-model="formdata.BHREMARK" />
-				 <!--:value="formdata.BHREMARK" @blur="getTextcontent" -->
+				<textarea  placeholder="请输入您的详细描述" class="formTextarea" v-model="formdata.BHREMARK" />				
 			</view>
 			<view class="submitBtns">
 				<button class="submitBtn" type="primary" @click="submitImgs">提交</button>
 				<button class="submitBtn" type="primary" @click="submitCancel">取消</button>
 			</view>
-		</view>
-		
+		</view>		
 	</view>
 </template>
 
 <script>
 	var _this;
 	import esriLoader from 'esri-loader';
-	import {appLoginWx,request,request2,VxgetLocation} from '@/pages/network/appLoginWx.js'
+	import {appLoginWx,request,request2,VxgetLocation} from '@/pages/network/appLoginWx.js';
+	import formContent from '@/pages/fxbhbtn/formContent/formContent.vue'
 		export default {
 			data() {
 				return {
@@ -202,7 +214,6 @@
 						SUBUSER:uni.getStorageSync('phone'),
 						ID:'',
 						OLDID:'',//旧Id
-						// addId:0,
 					},
 					formdata2:{
 						imgfiles:[
@@ -247,17 +258,16 @@
 					showPageThree:false,
 					showPageBars:true,
 					popupShow:false,
+					popupShow2:false,
 					errShow:false,
 					draw:null,
 					addGraphic:null,
 					subuserShow:false,
 					checkstateShow:false,
+					checkstateShowerr:false,
+					noGraphic:null,
 					imgUrl:"http://bhfxxcx.natapp1.cc",
-					imgfilesNew:[
-						"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
-						"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
-						"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg"
-					],
+					imgfilesNew:[],
 					template:{
 						content: [{
 								type: "fields",
@@ -280,7 +290,6 @@
 								},{
 									fieldName: "SUNTIME",
 									label: "提交时间",
-									type: "string"
 								}, {
 									fieldName: "BHBEFORE",
 									label: "变化前"										
@@ -297,7 +306,7 @@
 									type: "string"
 								}]
 							},
-							{ // Autocasts as new MediaContent()
+							{ 
 							  type: "media",
 							  mediaInfos: [ {
 								// title: "<b>现场图片</b>",
@@ -319,7 +328,7 @@
 								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
 								}
 							  },]
-							},]
+							},],
 						},
 					template2:{
 						content: [{
@@ -387,6 +396,35 @@
 						xiugai:false,
 						jchz:false
 				}
+			},
+			watch:{
+				popupShow(val){
+					if(val){
+						let esriUI=document.querySelector('.esri-ui');
+						esriUI.style.display='none';
+						setTimeout(()=>{											
+							let popupcontentKey=document.getElementsByClassName('esri-feature-fields__field-header');
+							let popupcontentVal=document.getElementsByClassName('esri-feature-fields__field-data');
+							popupcontentKey.forEach((item,index)=>{
+								if(index==0||index==1){
+									item.style.display='none';
+								}
+							});
+							popupcontentVal.forEach((item,index)=>{
+								if(index==0||index==1){
+									item.style.display='none';
+								}
+							});
+							esriUI.style.display='block';
+							_this.popupShow2=val;
+						},600)			
+					}else{
+						_this.popupShow2=val;
+					}
+				}
+			},				
+			components:{
+				formContent
 			},
 			mounted() {
 				this.formdata.SUBUSER=uni.getStorageSync('phone');
@@ -555,13 +593,14 @@
 							}
 							if(_this.showPageBars){
 								_this.view.hitTest(screenPoint).then(function(response){
-									if(response.results.length>0){			
-										// let id=response.results[0].graphic.attributes.OBJECTID;//获取要查看属性图斑的的objectid（原图形的id）
+									if(response.results.length>0){
 										let id=response.results[0].graphic.attributes.ID;
 										let checkState=response.results[0].graphic.attributes.AUDITRES;//审核状态
-										// _this.formdata.OLDID=id;
+										// _this.formdata.ID=id;
+										_this.noGraphic=response.results[0].graphic;//修改时不绘制图形
 										uni.getStorageSync('phone')==response.results[0].graphic.attributes.SUBUSER?_this.subuserShow=true:_this.subuserShow=false;//修改自己的
 										checkState==null?_this.checkstateShow=true:_this.checkstateShow=false;//等待审核可以修改
+										checkState!='2'?_this.checkstateShowerr=true:_this.checkstateShowerr=false;//不是拒绝就可纠错
 										_this.popupShow=false;
 										//请求后台获取图片
 										request2({
@@ -655,6 +694,7 @@
 								_this.map.layers.items[5].queryFeatures(query).then(function(results){
 								  let checkState=results.features[0].attributes.AUDITRES;
 								  checkState==null?_this.checkstateShow=true:_this.checkstateShow=false;//
+								  checkState!='2'?_this.checkstateShowerr=true:_this.checkstateShowerr=false;
 								  id=results.features[0].attributes.ID;
 								  request2({
 								  	url:'/api/bhfx/getphotos',
@@ -745,23 +785,25 @@
 									imagesrc:_this.imgUrl+item,
 									id:index
 								}
+								_this.imgfilesNew[index]=item;
 							});
+							console.log("修改",_this.imgfilesNew);
 							//渲染属性
 							esriLoader.loadModules(["esri/tasks/support/Query"])
 							.then(([Query])=>{
 								const query=new Query();
-								query.where= "OBJECTID = '"+objectIdstr +"'";
+								query.where= "OBJECTID = '"+ objectIdstr +"'";
 								_this.map.layers.items[5].queryFeatures(query).then(function(results){
+									_this.noGraphic=results.features[0];
 									_this.formdata.BHTYPE=results.features[0].attributes.BHTYPE;
 									_this.formdata.BHREMARK=results.features[0].attributes.BHREMARK;
 									_this.formdata.BHBEFORE=results.features[0].attributes.BHBEFORE;
 									_this.formdata.BHAFTER=results.features[0].attributes.BHAFTER;
 									_this.formdata.SUBUSER=uni.getStorageSync('phone');
-									_this.formdata.OLDID=results.features[0].attributes.OLDID;
+									_this.formdata.OLDID=results.features[0].attributes.OLDID;								
 									_this.formdata.OBJECTID=objectIdstr;
-									console.log(_this.formdata);
-									// document.getElementById('selectOne').value=_this.formdata.BHBEFORE;
-									// document.getElementById('selectTwo').value=_this.formdata.BHAFTER;
+									_this.formdata.ID=results.features[0].attributes.ID;
+									_this.formdata.SUNTIME=_this.getTime2(results.features[0].attributes.SUNTIME);//将时间戳转为日期时间展示
 								})
 							});
 						}
@@ -784,15 +826,15 @@
 					// uni.redirectTo({
 					// 	url:"/pages/fxbhbtn/fxbhIndexErr?longitude="+_this.longitudeData+"&latitude="+_this.latitudeData
 					// })					
-					if(document.getElementsByClassName('esri-feature-fields__field-data').length<1){
-						uni.showModal({
-							title: '纠错提醒',
-							content:'请选择要纠错的对象',
-							showCancel: false,						
-							confirmText: '关闭'
-						})
-						return;
-					}else{
+					// if(document.getElementsByClassName('esri-feature-fields__field-data').length<1){
+					// 	uni.showModal({
+					// 		title: '纠错提醒',
+					// 		content:'请选择要纠错的对象',
+					// 		showCancel: false,						
+					// 		confirmText: '关闭'
+					// 	})
+					// 	return;
+					// }else{
 						let esriPopupId=document.querySelector('.esri-feature-fields__field-data').innerText;
 						let objectIdstr=esriPopupId.substr(1);
 						esriLoader.loadModules(["esri/tasks/support/Query"])
@@ -801,7 +843,7 @@
 							query.where= "OBJECTID = '"+objectIdstr +"'";
 							_this.map.layers.items[5].queryFeatures(query).then(function(results){
 							  let checkState=results.features[0].attributes.AUDITRES;console.log('zt',checkState)
-							  if(checkState=='1'){//1审核通过
+							  // if(checkState=='1'){//1审核通过
 								  _this.formdata={
 								  	imgfiles:[
 								  		{
@@ -823,12 +865,10 @@
 								  	BHBEFORE:'',
 								  	BHAFTER:'',
 								  	SUBUSER:uni.getStorageSync('phone'),
-								  	ID:'',
+								  	ID:_this.getTime(),
 								  	OLDID:results.features[0].attributes.ID
 								  }
 								  _this.current=0;
-								  // document.getElementById('selectOne').value="";
-								  // document.getElementById('selectTwo').value="";
 								  if(document.getElementsByClassName('esri-popup__button').length>0){
 								  	document.getElementsByClassName('esri-popup__button')[0].click();
 								  }
@@ -836,21 +876,21 @@
 								  _this.errShow=true;
 								  _this.showPageOne=false;
 								  _this.showPageBars=false;
-								  _this.getTime();
+								  // _this.getTime();
 								  _this.xiugai=false;								
-							  }else{
-								  uni.showModal({
-								  	title: '纠错提醒',
-								  	content:'请选择可以纠错的对象',
-								  	showCancel: false,						
-								  	confirmText: '关闭'
-								  })
-								  return;  
-							  }
+							  // }else{
+								 //  uni.showModal({
+								 //  	title: '纠错提醒',
+								 //  	content:'请选择可以纠错的对象',
+								 //  	showCancel: false,						
+								 //  	confirmText: '关闭'
+								 //  })
+								 //  return;  
+							  // }
 							});
 							
 						})
-					}						
+					// }						
 					
 				},
 				newaddBtn(){
@@ -860,7 +900,8 @@
 					this.formdata=JSON.parse(JSON.stringify(this.formdata2));
 					this.current=0;
 					this.getforInf();
-					setInterval(_this.getTime(),1000);
+					// setInterval(_this.getTime(),1000);
+					this.formdata.ID=_this.getTime();
 					this.showPageOne=false;
 					this.showPageBars=false;
 					this.errShow=false;
@@ -869,7 +910,7 @@
 					this.formdata=JSON.parse(JSON.stringify(this.formdata2));
 					this.current=1;
 					this.getforInf();
-					setInterval(_this.getTime(),1000);
+					this.formdata.ID=_this.getTime();;
 					this.showPageOne=false;
 					this.showPageBars=false;
 					this.errShow=false;
@@ -878,7 +919,7 @@
 					this.formdata=JSON.parse(JSON.stringify(this.formdata2));
 					this.current=2;
 					this.getforInf();
-					setInterval(_this.getTime(),1000);
+					this.formdata.ID=_this.getTime();
 					this.showPageOne=false;
 					this.showPageBars=false;
 					this.errShow=false;
@@ -898,15 +939,24 @@
 					});	
 				},
 				getTime(){
+					  _this.formdata.SUNTIME = new Date().getTime();
 					  let yy = new Date().getFullYear();
 					  let mm = new Date().getMonth()+1;
 					  let dd = new Date().getDate();
 					  let hh = new Date().getHours();
 					  let mf = new Date().getMinutes()<10 ? '0'+new Date().getMinutes() : new Date().getMinutes();
 					  let ss = new Date().getSeconds()<10 ? '0'+new Date().getSeconds() : new Date().getSeconds();
-					  _this.formdata.SUNTIME = yy+'/'+mm+'/'+dd+' '+hh+':'+mf+':'+ss;//时间
-					  _this.formdata.ID=yy.toString()+mm+dd+hh+mf+ss;
-					  return yy+mm+dd+hh+mf+ss;
+					  // _this.formdata.SUNTIME = yy+'/'+mm+'/'+dd+' '+hh+':'+mf+':'+ss;//时间				  
+					  return yy.toString()+mm+dd+hh+mf+ss;
+				},
+				getTime2(timestr){
+					let yy = new Date(timestr).getFullYear();
+					let mm = new Date(timestr).getMonth()+1;
+					let dd = new Date(timestr).getDate();
+					let hh = new Date(timestr).getHours();
+					let mf = new Date(timestr).getMinutes()<10 ? '0'+new Date(timestr).getMinutes() : new Date(timestr).getMinutes();
+					let ss = new Date(timestr).getSeconds()<10 ? '0'+new Date(timestr).getSeconds() : new Date(timestr).getSeconds();
+					return  yy+'/'+mm+'/'+dd+' '+hh+':'+mf+':'+ss;
 				},
 				cameraChild(index){//照片
 					uni.chooseImage({
@@ -915,6 +965,7 @@
 					    // sourceType: ['album'], //从相册选择
 					    success: function (res) {
 							_this.formdata.imgfiles[index].imagesrc=res.tempFiles[0].path;
+							_this.formdata=JSON.parse(JSON.stringify(_this.formdata));//修改图片时
 							uni.uploadFile({//图片上传返回
 								url:_this.imgUrl+'/api/photo/uploadphoto',
 								filePath: res.tempFilePaths[0],
@@ -922,6 +973,7 @@
 								headers: {'Authorization':uni.getStorageSync('token')},
 								success(res) {//获取照片
 									_this.imgfilesNew[index]=JSON.parse(res.data).Data;
+									console.log("camera",_this.imgfilesNew);
 								}
 							});						
 					    }
@@ -964,7 +1016,7 @@
 						});
 						this.jchz=true;
 				},
-				createPolygonGraphic(vertices){//绘制图形事件
+				createPolygonGraphic(vertices){//绘制图形事件					
 					_this.view.graphics.removeAll();
 					var polygon = {
 					  type: "polygon", // autocasts as Polygon
@@ -987,6 +1039,7 @@
 							attributes: _this.formdata
 						});	
 						_this.view.graphics.add(_this.addGraphic);
+						_this.getTime();
 					 })
 				    
 				 },
@@ -1016,32 +1069,27 @@
 					}else{
 						console.log('addGraphic',_this.addGraphic,_this.formdata);					
 						if(_this.xiugai){
-							_this.map.layers.items[5].applyEdits({
-							    updateFeatures: [_this.addGraphic]
-							}).then(res=>{console.log(res.updateFeatureResults)
-							// let objectIdstr=res.updateFeatureResults[0].objectId;
-								_this.map.layers.items[5].refresh();
-								_this.showPageOne=true;
-								_this.showPageThree=false;
-								_this.showPageBars=true;
-								_this.checkstateShow=false;
-								_this.map.layers.items[5].popupTemplate=_this.template2;//固定模板
-								_this.xiugai=false;
-								request2({
-									url:'/api/bhfx/submitphotos',
-									method:"POST",
-									header: {'Authorization': uni.getStorageSync('token')},
-									data: {
-										// "id":_this.formdata.OBJECTID,
-										"id":_this.formdata.ID,
-										"photos":_this.imgfilesNew
-									},
-								}).then((res)=>{
-										if(res.data.Status=="success"){
-											//提示已有id不能重复提交						
-										}
-									})
-							});														
+							_this.getTime();console.log(_this.formdata.SUNTIME)
+							if(_this.addGraphic!=null){
+								_this.map.layers.items[5].applyEdits({
+									updateFeatures: [_this.addGraphic]
+								}).then(res=>{console.log(res.updateFeatureResults)
+								// let objectIdstr=res.updateFeatureResults[0].objectId;
+									_this.ismodifyGraphic();
+								});
+							}else{
+								_this.noGraphic.attributes.SUNTIME=_this.formdata.SUNTIME;
+								// _this.noGraphic.attributes.SUNTIME=_this.getTime2(new Date());
+								_this.noGraphic.attributes.BHTYPE=_this.formdata.BHTYPE;
+								_this.noGraphic.attributes.BHREMARK=_this.formdata.BHREMARK;
+								_this.noGraphic.attributes.BHBEFORE=_this.formdata.BHBEFORE;
+								_this.noGraphic.attributes.BHAFTER=_this.formdata.BHAFTER;
+								_this.map.layers.items[5].applyEdits({
+									updateFeatures: [_this.noGraphic]
+								}).then(res=>{
+									_this.ismodifyGraphic();
+								});
+							}														
 						}else{
 							_this.map.layers.items[5].applyEdits({
 							    addFeatures: [_this.addGraphic]
@@ -1078,12 +1126,41 @@
 									_this.showPageBars=true;
 									_this.map.layers.items[5].popupTemplate=_this.template2;//固定模板
 									_this.formdata=JSON.parse(JSON.stringify(_this.formdata2));//清空内容区
-									// document.getElementById('selectOne').value="";
-									// document.getElementById('selectTwo').value="";
 								})
 							});
 						}
 					}
+				},
+				ismodifyGraphic(){
+					_this.map.layers.items[5].refresh();debugger
+					_this.showPageOne=true;
+					_this.showPageThree=false;
+					_this.showPageBars=true;
+					_this.checkstateShow=false;
+					_this.checkstateShowerr=false;
+					_this.map.layers.items[5].popupTemplate=_this.template2;//固定模板
+					_this.xiugai=false;
+					request2({
+						url:'/api/bhfx/submitphotos',
+						method:"POST",
+						header: {'Authorization': uni.getStorageSync('token')},
+						data: {
+							// "id":_this.formdata.OBJECTID,
+							"id":_this.formdata.ID,
+							"photos":_this.imgfilesNew
+						},
+					}).then((res)=>{
+						if(res.data.Status=="success"){
+							console.log("图片修改成功");				
+						}else{
+							uni.showModal({
+								title: '信息',
+								content:'修改失败，重新操作',
+								showCancel: false,						
+								confirmText: '关闭'
+							})
+						}
+					})
 				},
 				submitCancel(){
 					this.showPageOne=true;

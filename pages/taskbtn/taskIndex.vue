@@ -39,10 +39,10 @@
 					<span :class="{'tastTitle':!doTaskShow}" @click='lqrw'>领取任务</span> <span :class="{'tastTitle':doTaskShow}" @click='zrw'>做任务</span>
 				</view>
 				<view v-show="!doTaskShow" class="tastContent">
-					<view v-for="(item,index) in tasksById" :key="item.index" class="taskItem" @click="doTasksee(item.GUID)">
+					<view v-for="(item,index) in tasksClass" :key="item.index" class="taskItem" @click="doTasksee(item.GUID)">
 						<view class="taskItemChild">
-							<view class="itemName">{{item.QU}}{{item.XZ}}({{item.NAME}})</view>
-							<view class="naviTo">{{item.NYREMARK}}</view>
+							<view class="itemName">大类({{item.NAME}})</view>
+							<view class="naviTo">{{item.DESCRIPTION}}</view>
 						</view>
 						<view class="taskItemChild">
 							<view class="itemMoney">{{item.DISTANCE}}m {{item.AMOUNT || 0}}元</view>
@@ -50,28 +50,7 @@
 								<button class="getTask" size="mini" @click.stop="getTaskToDo(item.GUID)">领取任务</button>
 							</view>
 						</view>
-					</view>
-					<!-- <uni-collapse @change="collapseChange">
-						<uni-collapse-item :title="taskItem.NAME+'(' + taskItem.DESCRIPTION+')'" v-for="(taskItem,ind) in tasksClass">
-							<view class="tastTab">
-								<span :class="{'tastTitle':plpBoolean==0}" @click="getTaskPoiLinePoly(taskItem.ID,0,'点')">点</span>
-								<span :class="{'tastTitle':plpBoolean==1}" @click="getTaskPoiLinePoly(taskItem.ID,1,'线')">线</span>
-								<span :class="{'tastTitle':plpBoolean==2}" @click="getTaskPoiLinePoly(taskItem.ID,2,'面')">面</span>
-							</view>
-						    <view v-for="(item,index) in tasksById" :key="item.index" class="taskItem" @click="doTasksee(item.GUID)">
-						    	<view class="taskItemChild">
-						    		<view class="itemName">{{item.QU}}{{item.XZ}} {{item.DISTANCE}}m</view>
-						    		<view class="naviTo">{{item.NYREMARK}}</view>
-						    	</view>
-						    	<view class="taskItemChild">
-						    		<view class="itemMoney">{{item.AMOUNT || 0}}元</view>
-						    		<view>
-						    			<button class="getTask" size="mini" @click.stop="getTaskToDo(item.GUID)">领取任务</button>
-						    		</view>
-						    	</view>
-						    </view>
-						</uni-collapse-item>
-					</uni-collapse>	 -->				
+					</view>				
 				</view>				
 				<view class="doTaskDiv" v-show="doTaskShow">
 					<!-- <view class="getTaskTitle">已领取</view> -->
@@ -82,17 +61,19 @@
 							<view class="naviTo">{{item.NYREMARK}}</view>
 						</view>
 						<view class="taskItemChild">
-							<view class="itemMoney">{{item.AMOUNT || 0}}元</view>
+							<view class="itemMoney">**m {{item.AMOUNT || 0}}元</view>
 							<view style="display: flex;justify-content: space-between">															
-								<button type="primary" size="mini" class="doTask" @click.stop="doTask(item.ID)" :disabled="item.TIME=='00:00'">做任务</button>
+								<!-- <button type="primary" size="mini" class="doTask" @click.stop="doTask(item.ID)" :disabled="item.TIME=='00:00'">做任务</button> -->
+								<button type="primary" size="mini" class="doTask" @click.stop="doTaskContent('taskRoad')" :disabled="item.TIME=='00:00'">做任务</button>
 							</view>
-						</view>
+						</view>						
 					</view>
 				</view>
 			</view>
 		</view>
 		<!-- neirong -->
-		<view class="bhfxIndex" v-show="!showPageOne">
+		<component :is="contentType" v-show="!showPageOne" :formdata="formdata" :imgfilesNew="imgfilesNew" :radios="radios"  :current="current" :imgUrl="imgUrl"></component>
+		<!-- <view class="bhfxIndex" v-show="!showPageOne">
 			<view class="phototitle">拍照</view>
 			<view class="cameraDiv">
 				<view class="cameraChild" @click="cameraChild(index)" v-for="(item,index) in formdata.imgfiles">
@@ -102,10 +83,10 @@
 			<view class="formDiv">
 				<b>上传时间：</b>{{formdata.SUNTIME}}
 			</view>
-			<!-- <view class="formDiv">
+			<view class="formDiv">
 				<b>拍照地点：</b>{{formdata.bhlocation}}
-			</view> -->
-			<!-- <view class="formDiv formDiv2">
+			</view>
+			<view class="formDiv formDiv2">
 				<b>是否变化：</b>
 				<radio-group @change="bhyesOrno">
 					<label v-for="(item,index) in radios2" class="radioLabel">
@@ -140,7 +121,7 @@
 				  <option value="裸地">裸地</option>
 				  <option value="绿网">绿网</option>
 				</select>
-			</view> -->
+			</view>
 			<view class="formDiv">
 				<view><b>变化详情：（大于15字）</b></view>
 				<textarea  placeholder="请输入您的详细描述" :value="formdata.BHREMARK" class="formTextarea" @blur="getTextcontent"/>
@@ -148,7 +129,7 @@
 			<view>
 				<button type="primary" @click="submitImgs">提交</button>
 			</view>
-		</view>
+		</view> -->
 		
 	</view>
 	
@@ -158,6 +139,7 @@
 	var _this;
 	import esriLoader from 'esri-loader';
 	import {appLoginWx,request,request2,VxgetLocation} from '@/pages/network/appLoginWx.js'
+	import taskRoad from '@/pages/taskbtn/taskRoad.vue'
 		export default {
 			data() {
 				return {
@@ -396,13 +378,8 @@
 					// 		radioval:"否"
 					// 	}
 					// ],
-					imgUrl:"http://bhfxxcx.natapp1.cc",
-					imgfilesNew:[
-						"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
-						"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
-						"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg"
-					],
-					refObjectid:666
+					refObjectid:666,
+					contentType:''
 				}
 			},
 			beforeDestroy(){
@@ -521,21 +498,57 @@
 						// featruesLayer
 						const layerfeaturePoi = new FeatureLayer({
 						  // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/0",
-						  url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/0",
+						  // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/0",
+						   url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
 						  outFields: ["*"],
-						  popupTemplate: this.template,
+						  // popupTemplate: this.template,
 						});
 						// layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除
 						const layerfeatureHouse = new FeatureLayer({
 						   // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/1",
-						   url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/1"
+						   // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/1"
+						    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
 						});
 						const layerfeatureRoad = new FeatureLayer({
 						   // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/2",
-						   url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/2"
+						   // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/2"
+						    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
 						});
 						map.addMany([layerfeaturePoi,layerfeatureHouse,layerfeatureRoad]);
-																		
+						this.view.on('click',function(event){
+							if(!_this.doTaskShow){
+								_this.latitudeData=event.mapPoint.latitude;
+								_this.longitudeData=event.mapPoint.longitude;
+								// console.log(_this.latitudeData,_this.longitudeData);
+								let updatelayer=_this.map.layers.items[4];//标记图层
+								_this.view.center=[_this.longitudeData,_this.latitudeData];
+								const updateEdit={
+										updateFeatures:[{
+											"geometry":{
+												type: 'point',
+												longitude: _this.longitudeData, // 经度116.29845,39.95933
+												latitude: _this.latitudeData, // 纬度
+											},
+											"attributes":{
+											   "ObjectID": updatelayer.source.items[0].attributes.ObjectID,
+											}
+										}]
+									};						
+								updatelayer.applyEdits(updateEdit)
+								.then(function(editsResult){
+									console.log(editsResult.updateFeatureResults);
+									//传坐标发送请求获取附近任务
+									// request2({
+									// 	url:'/api/lqrw/getRwList',
+									// 	header: {'Authorization':uni.getStorageSync('token')},
+									// }).then((res)=>{									
+									// 	if(res.data.Status=="success"){
+									// 		_this.tasksClass=res.data.Data;
+									// 	}
+									// });
+								})
+							}
+						})											
 					})
 				},
 				radioChange(evt) {
@@ -683,6 +696,9 @@
 					this.formdata.ID=id;
 					this.getTime();
 				},
+				doTaskContent(type){
+					this.contentType=type;debugger
+				},
 				doTasksee(id,layerindex){
 					let layerIndex=(layerindex==0 || layerindex=="点")?5:((layerindex==1 || layerindex=="线")?6:7);
 					esriLoader.loadModules(["esri/tasks/support/Query","esri/Graphic"])
@@ -780,12 +796,12 @@
 				bhtypeVal(e){
 					this.formdata.BHTYPE=e.detail.value;
 				},
-				selectOne(){
-					this.formdata.BHBEFORE=document.getElementById('selectOne').value;
-				},
-				selectTwo(){
-					this.formdata.BHAFTER=document.getElementById('selectTwo').value;
-				},
+				// selectOne(){
+				// 	this.formdata.BHBEFORE=document.getElementById('selectOne').value;
+				// },
+				// selectTwo(){
+				// 	this.formdata.BHAFTER=document.getElementById('selectTwo').value;
+				// },
 				getTextcontent(e){
 					let	values = e.detail.value;
 					this.formdata.BHREMARK=values;
@@ -832,24 +848,13 @@
 						});
 					}
 				},
-			}
+			},
+			components:{
+				taskRoad
+			},
 		}
 </script>
 
 <style>
-	@import url("./css/taskIndex.css");
-	.bhfxIndex{padding: 0 5px;}
-	.phototitle{font-weight: bold;padding:0 0 5px 0;}
-	.cameraDiv{height: 150px;width: 100%;display: flex;justify-content:space-around;}
-	.formDiv{margin: 5px 0;border-bottom: solid 1px lightgray;padding: 5px 0;}
-	.formDiv2{display: flex;justify-content: flex-start;}
-	.cameraChild{width: 33.33%;}
-	.cameraImg{width:100%;height:100%;border: solid 1px lightgray;}
-	.radioLabel{margin: 0 5px;}
-	.radioColor{color: gray;}
-	.formTextarea{width: 100%;height: 150rpx;background: lightgray;}
-	.tastTab{margin: 10px 0;}
-	.tastTab>span{padding: 5px 10px;margin: 0 10px;cursor: pointer;}
-	.tastTitle{border-bottom: solid 2px blue;color:#9191ea}
-	.tastContent,.doTaskDiv{height: calc(100% - 44px);overflow-y: auto;}
+	@import url("./css/taskIndex.css");	
 </style>

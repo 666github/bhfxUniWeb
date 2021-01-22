@@ -177,7 +177,7 @@ var _appLoginWx = __webpack_require__(/*! @/pages/network/appLoginWx.js */ 25); 
 //
 //
 var _this;var _default = { data: function data() {return { moneyData: 100, phone: '18888888888' };}, mounted: function mounted() {_this = this;this.getwallet();_this.phone = uni.getStorageSync('phone');}, methods: { getwallet: function getwallet() {//获取余额
-      (0, _appLoginWx.request2)({ url: '/api/wxuser/getwallet', header: { 'Authorization': uni.getStorageSync('token') } }).then(function (res) {if (res.data.Status == "success") {//获取余额
+      (0, _appLoginWx.request2)({ url: '/api/wxuser/getwallet', header: { 'Authorization': uni.getStorageSync('token') } }).then(function (res) {debugger;if (res.data.Status == "success") {//获取余额
           _this.moneyData = res.data.Data;}});} } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 

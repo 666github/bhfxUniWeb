@@ -34,7 +34,8 @@ uni-page-head{display: none!important;}
 	.tollone{height: 72px;position: relative;}
 	.tolltwo{height: 100px;position: relative;margin: 5px 0;}
 	.tollthree{height: 72px;position: relative;}
-	.tollfour{height: 200px;position: relative;}
+	/* .tollfour{height: 200px;position: relative;} */
+	.tollfour{height: 100px;position: relative;margin: 5px 0;}
 	.uni-list{width: 100px;border: solid 1rpx #40BBF3;border-radius: 5px;padding-right: 25px;}
 	.uni-list-cell {display: flex;justify-content: flex-start;padding: 5px 0;}
 	.uni-list radio,.uni-list checkbox{transform:scale(0.8)}

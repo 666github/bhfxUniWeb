@@ -94,10 +94,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "components", function() { return components; });
 var components = {
   uniCollapse: function() {
-    return __webpack_require__.e(/*! import() | components/uni-collapse/uni-collapse */ "components/uni-collapse/uni-collapse").then(__webpack_require__.bind(null, /*! @/components/uni-collapse/uni-collapse.vue */ 90))
+    return __webpack_require__.e(/*! import() | components/uni-collapse/uni-collapse */ "components/uni-collapse/uni-collapse").then(__webpack_require__.bind(null, /*! @/components/uni-collapse/uni-collapse.vue */ 97))
   },
   uniCollapseItem: function() {
-    return __webpack_require__.e(/*! import() | components/uni-collapse-item/uni-collapse-item */ "components/uni-collapse-item/uni-collapse-item").then(__webpack_require__.bind(null, /*! @/components/uni-collapse-item/uni-collapse-item.vue */ 97))
+    return __webpack_require__.e(/*! import() | components/uni-collapse-item/uni-collapse-item */ "components/uni-collapse-item/uni-collapse-item").then(__webpack_require__.bind(null, /*! @/components/uni-collapse-item/uni-collapse-item.vue */ 104))
   }
 }
 var render = function() {
@@ -137,7 +137,7 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; //
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; //
 //
 //
 //
@@ -167,10 +167,20 @@ var _default =
 {
   data: function data() {
     return {
-      pendingInf: '到客服到时交房量算低级分离式的会计分录sadf' };
+      pendingInf: "\u5230\u5BA2\u670D\u5230\u65F6\u4EA4\u623F\u91CF\u7B97\u4F4E\u7EA7\u5206\u79BB\u5F0F\u7684\u6676\u6676\u59D0\u6676\u6676\u90FD\u662F\u519B\u519B\u519B\u519B\u519B\u519B\u519B\u519B\u519B\u519B\u519B\u519B\u519B\u519B\u519B\u519B\u519B\u519B\u519B\u519B\u519B\u519B,\t\t\t\n\t\t\t\u519B\u519B\u623F\u5C71\u7684\u6CD5\u6492\u65E6\u6CD5\u6492\u65E6\u6CD5\u4E09\u4F1A\u8BA1\u5206\u5F55sadf" };
+
 
   },
-  methods: {} };exports.default = _default;
+  methods: {
+    pendingEvent: function pendingEvent() {
+      uni.navigateTo({
+        url: '/pages/index/indexWeb',
+        success: function success(res) {
+          // uni.$emit('infLocation',{OBJECTID:385})
+        } });
+
+    } } };exports.default = _default;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 
 /***/ }),
 
