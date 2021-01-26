@@ -16,9 +16,9 @@ uni-page-head{display: none!important;}
 		/* height: calc(100% - 288px);
 		height: calc(100% - 288px - constant(safe-area-inset-top));
 		height: calc(100% - 288px - env(safe-area-inset-top));	 */	
-		height: calc(100% - 50%);
-		height: calc(100% - 50% - constant(safe-area-inset-top));
-		height: calc(100% - 50% - env(safe-area-inset-top));	
+		height: calc(100% - 60%);
+		height: calc(100% - 60% - constant(safe-area-inset-top));
+		height: calc(100% - 60% - env(safe-area-inset-top));	
 		}
 	.bottomBar {
 		position: fixed;
@@ -29,7 +29,7 @@ uni-page-head{display: none!important;}
 		right: 0;
 		bottom: 0;
 		/* height: 288px; */
-		height:50%;
+		height:60%;
 		/* line-height: 144px; */
 		text-align: center;
 		/* overflow-y: auto; */
@@ -44,10 +44,11 @@ uni-page-head{display: none!important;}
 	/* .taskItemChild{display: flex;flex-direction: column;} */
 	/* 右侧工具 */
 	.rightToll{position: absolute;right: 5px;top: 20px;}
-	.tollone{height: 72px;position: relative;}
-	.tolltwo{height: 100px;position: relative;margin: 5px 0;}
-	.tollthree{height: 72px;position: relative;}
-	.tollfour{height: 200px;position: relative;}
+	.tollone{height: 60px;position: relative;}
+	.tolltwo{height: 90px;position: relative;margin: 5px 0;}
+	.tollthree{height: 40px;position: relative;}
+	.leftToll{position: absolute;left: 10px;top: 180px;}/*左侧*/
+	.tollfour{width:24px;height: 40px;position: relative;}
 	.uni-list{width: 100px;border: solid 1rpx #40BBF3;border-radius: 5px;padding-right: 25px;}
 	.uni-list-cell {display: flex;justify-content: flex-start;padding: 5px 0;}
 	.uni-list radio,.uni-list checkbox{transform:scale(0.8)}
@@ -55,7 +56,7 @@ uni-page-head{display: none!important;}
 	.layersControl{background-image: url(@/static/layers.svg);}
 	.datassControl{background-image: url(@/static/datas.svg);}
 	.localControl{background-image: url(@/static/closer.svg);}
-	.helpControl{background-image: url(@/static/help.svg);}
+	.nearControl{background-image: url(@/static/near.svg);}
 	/* 领取任务 */
 	/* .doTaskDiv{height: 140rpx;} */
 	.getTaskTitle{background-color:#03a9f4;height: 60rpx;color: #FFFFFF;line-height: 60rpx;}
@@ -78,3 +79,7 @@ uni-page-head{display: none!important;}
 	.tastTab>span{padding: 5px 10px;margin: 0 10px;cursor: pointer;}
 	.tastTitle{border-bottom: solid 2px blue;color:#9191ea}
 	.tastContent,.doTaskDiv{height: calc(100% - 44px);overflow-y: auto;}
+	.submitBtns{display: flex;justify-content: space-around;}
+	.submitBtn{width: 100px;margin: 0 40rpx;}
+	#selectOne,#selectTwo{border-radius: 5px;padding: 0 2px;}
+	.unilistcell{padding: 2px 0;}

@@ -7,7 +7,7 @@
 				<view class="tollone">
 					<view class="uni-list" v-show="!layersFrame">
 						<radio-group @change="radioChange">
-							<label class="uni-list-cell" v-for="(item, index) in radioitems" :key="item.value">
+							<label class="uni-list-cell unilistcell" v-for="(item, index) in radioitems" :key="item.value">
 								<view>
 									<radio :value="item.value" :checked="item.checked"/>
 								</view>
@@ -20,7 +20,7 @@
 				<view class="tolltwo">
 					<view class="uni-list" v-show="!datasFrame">
 						<checkbox-group @change="checkboxChange">
-							<label class="uni-list-cell" v-for="item in checkboxitems" :key="item.value">
+							<label class="uni-list-cell unilistcell" v-for="item in checkboxitems" :key="item.value">
 								<view>
 									<checkbox :value="item.value" :checked="item.checked" />
 								</view>
@@ -32,6 +32,11 @@
 				</view>
 				<view class="tollthree">
 					<view class="localControl tollIcon" @click="localtionControl"></view>
+				</view>
+			</view>
+			<view class="leftToll">
+				<view class="tollfour">
+					<view class="nearControl tollIcon" @click="nearControl"></view>
 				</view>
 			</view>
 			<view class="bottomBar">
@@ -72,8 +77,9 @@
 			</view>
 		</view>
 		<!-- neirong -->
-		<component :is="contentType" v-show="!showPageOne" :formdata="formdata" :imgfilesNew="imgfilesNew" :radios="radios"  :current="current" :imgUrl="imgUrl"></component>
-		<!-- <view class="bhfxIndex" v-show="!showPageOne">
+		<!-- v-show="!showPageOne" -->
+		<!-- <component :is="contentType" v-show="!showPageOne"  @submitCancel="submitCancel"></component> -->
+		<view class="bhfxIndex" v-show="!showPageOne">
 			<view class="phototitle">拍照</view>
 			<view class="cameraDiv">
 				<view class="cameraChild" @click="cameraChild(index)" v-for="(item,index) in formdata.imgfiles">
@@ -83,53 +89,16 @@
 			<view class="formDiv">
 				<b>上传时间：</b>{{formdata.SUNTIME}}
 			</view>
-			<view class="formDiv">
-				<b>拍照地点：</b>{{formdata.bhlocation}}
-			</view>
-			<view class="formDiv formDiv2">
-				<b>是否变化：</b>
-				<radio-group @change="bhyesOrno">
-					<label v-for="(item,index) in radios2" class="radioLabel">
-						<radio :value="item.radioval" :key="item.id" /><text>{{item.radioval}}</text>
-					</label>
-				</radio-group>
-			</view>
-			<view class="formDiv formDiv2" style="border-bottom: none;">
-				<view class="title"><b>变化类型：</b></view>
-				<radio-group @change="bhtypeVal">
-					<label v-for="(item,index) in radios" class="radioLabel">
-						<radio :value="item.radioval" :key="item.id" /><text>{{item.radioval}}</text>
-					</label>
-				</radio-group>
-			</view>
-			<view class="formDiv" style="padding-left: 80px;">
-				前期：
-				<select  @change="selectOne" id="selectOne">
-				  <option value =""></option>
-				  <option value ="建筑">建筑</option>
-				  <option value ="道路">道路</option>
-				  <option value="绿地">绿地</option>
-				  <option value="裸地">裸地</option>
-				  <option value="绿网">绿网</option>
-				</select>
-				后期：
-				<select  @change="selectTwo" id="selectTwo">
-				  <option value =""></option>
-				  <option value ="建筑">建筑</option>
-				  <option value ="道路">道路</option>
-				  <option value="绿地">绿地</option>
-				  <option value="裸地">裸地</option>
-				  <option value="绿网">绿网</option>
-				</select>
-			</view>
+			<component :is="item.type" @rdcontent="rdcontent($event,index)"   v-for="(item,index) in taskContentObj" :key='index' :labelname='item.name' :values="item.tkContent"></component>
 			<view class="formDiv">
 				<view><b>变化详情：（大于15字）</b></view>
-				<textarea  placeholder="请输入您的详细描述" :value="formdata.BHREMARK" class="formTextarea" @blur="getTextcontent"/>
+				<textarea  placeholder="请输入您的详细描述" class="formTextarea" v-model="formdataBHREMARK"/>
 			</view>
-			<view>
-				<button type="primary" @click="submitImgs">提交</button>
+			<view class="submitBtns">
+				<button class="submitBtn" type="primary" @click="submitImgs">提交</button>
+				<button class="submitBtn" type="primary" @click="submitCancel">取消</button>
 			</view>
-		</view> -->
+		</view>
 		
 	</view>
 	
@@ -140,6 +109,9 @@
 	import esriLoader from 'esri-loader';
 	import {appLoginWx,request,request2,VxgetLocation} from '@/pages/network/appLoginWx.js'
 	import taskRoad from '@/pages/taskbtn/taskRoad.vue'
+	import radioContent from '@/pages/taskbtn/taskContent/radioContent.vue'
+	import inputContent from '@/pages/taskbtn/taskContent/inputContent.vue'
+	import selectContent from '@/pages/taskbtn/taskContent/selectContent.vue'
 		export default {
 			data() {
 				return {
@@ -189,134 +161,7 @@
 					taskItemtype:'点',
 					// plpBoolean:0,
 					imgUrl:"http://bhfxxcx.natapp1.cc",
-					imgfilesNew:[
-						"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
-						"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
-						"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg"
-					],
-					template:{
-						content: [{
-								type: "fields",
-								fieldInfos: [
-									{
-									fieldName: "OBJECTID",
-									label: "OBJECTID",
-									type: "number",
-								},{
-									fieldName: "ID",
-									label: "唯一码",
-									type: "string",
-								},{
-									fieldName: "BHTYPE",
-									label: "变化类型",
-									format: {
-										places: 0,
-										digitSeparator: true
-									}
-								},{
-									fieldName: "SUNTIME",
-									label: "提交时间",
-									type: "string"
-								}, {
-									fieldName: "BHBEFORE",
-									label: "变化前"										
-								},{
-									fieldName: "BHAFTER",
-									label: "变化后"								
-								}, {
-									fieldName: "BHREMARK",
-									label: "变化详情",
-									type: "string"
-								},{
-									fieldName: "SUBUSER",
-									label: "提交人员",
-									type: "string"
-								}]
-							},
-							{
-							  type: "media",
-							  mediaInfos: [ {
-								// title: "<b>现场图片</b>",
-								type: "image",
-								value: {
-								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
-								}
-							  },
-							  {
-								// title: "<b>现场图片</b>",
-								type: "image",
-								value: {
-								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
-								}
-							  },{
-								// title: "<b>现场图片</b>",
-								type: "image",
-								value: {
-								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
-								}
-							  },]
-							},]
-						},
-					template2:{
-						content: [{
-								type: "fields",
-								fieldInfos: [
-									{
-									fieldName: "OBJECTID",
-									label: "OBJECTID",
-									type: "number"								
-								},{
-									fieldName: "ID",
-									label: "唯一码",
-									type: "string",
-								},{
-									fieldName: "BHTYPE",
-									label: "变化类型",
-									format: {
-										places: 0,
-										digitSeparator: true
-									}
-								},{
-									fieldName: "SUNTIME",
-									label: "提交时间",
-									type: "string"
-								}, {
-									fieldName: "BHBEFORE",
-									label: "变化前"										
-								},{
-									fieldName: "BHAFTER",
-									label: "变化后"								
-								}, {
-									fieldName: "BHREMARK",
-									label: "变化详情",
-									type: "string"
-								},{
-									fieldName: "SUBUSER",
-									label: "提交人员",
-									type: "string"
-								}]
-							},
-							{
-							  type: "media",
-							  mediaInfos: [ {
-								type: "image",
-								value: {
-								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
-								}
-							  },
-							  {
-								type: "image",
-								value: {
-								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
-								}
-							  },{
-								type: "image",
-								value: {
-								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
-								}
-							  },]
-							},]
-						},
+					imgfilesNew:[],
 					dotaskLists:[
 						{
 							dotaskName:"羊坊店路",
@@ -326,9 +171,6 @@
 						},
 					],
 					doTaskShow:false,
-					dotaskMoney:'10',
-					dotaskName:'羊坊店',
-					remainTime:'30:00',
 					// dotaskDis:false,
 					showPageOne:true,
 					formdata:{
@@ -346,7 +188,7 @@
 								id:2,
 							}
 						],
-						SUNTIME:"2020",
+						SUNTIME:"",
 						// BHTYPE:"拆除",
 						BHREMARK:"",						
 						// BHBEFORE:'绿地',
@@ -354,32 +196,92 @@
 						// SUBUSER:'',
 						ID:'',
 					},
-					// radios:[
-					// 	{
-					// 		id:0,
-					// 		radioval:"新增"
-					// 	},
-					// 	{
-					// 		id:1,
-					// 		radioval:"拆除"
-					// 	},
-					// 	{
-					// 		id:2,
-					// 		radioval:"改造"
-					// 	},
-					// ],
-					// radios2:[						
-					// 	{
-					// 		id:1,
-					// 		radioval:"是"
-					// 	},
-					// 	{
-					// 		id:0,
-					// 		radioval:"否"
-					// 	}
-					// ],
-					refObjectid:666,
-					contentType:''
+					contentType:'',
+					taskContentObj:[
+						{
+							type:'radioContent',
+							name:'是否找到',
+							tkContent:[
+								{
+									id:1,
+									radioval:'是'
+								},
+								{
+									id:0,
+									radioval:'否'
+								},
+							],
+						},
+						{
+							type:'selectContent',
+							name:'前期状态',
+							tkContent:[
+							],
+						},
+						{
+							type:'radioContent',
+							name:'变化类型',
+							tkContent:[
+								{
+									id:2,
+									radioval:'新增'
+								},
+								{
+									id:1,
+									radioval:'拆除'
+								},
+								{
+									id:0,
+									radioval:'改造'
+								},
+							],
+						},
+						{
+							type:'radioContent',
+							name:'道路状态',
+							tkContent:[
+								{
+									id:2,
+									radioval:'施工'
+								},
+								{
+									id:1,
+									radioval:'竣工'
+								},
+								{
+									id:0,
+									radioval:'通车'
+								},
+							],
+						},
+						{
+							type:'inputContent',
+							name:'车辆数量',
+							tkContent:[
+								{
+									id:0,
+									inputval:'请输入车辆数量'
+								},
+							],
+						},					
+					],
+					rdVal:[],
+					formdataBHREMARK:'',
+					formdataID:'',
+					formdataImgfiles:[
+						{
+							imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
+							id:0,
+						},
+						{
+							imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
+							id:1,
+						},
+						{
+							imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
+							id:2,
+						}
+					]
 				}
 			},
 			beforeDestroy(){
@@ -412,12 +314,18 @@
 			mounted(){
 				this.tasksInit();
 			},
+			watch:{
+				formdataBHREMARK(val){
+					this.rdVal[this.taskContentObj.length+1]=val;
+				}
+			},
 			methods: {
 				creatMapview(){
-					esriLoader.loadModules(['esri/Map','esri/views/MapView','esri/layers/FeatureLayer',"esri/layers/TileLayer","esri/layers/WebTileLayer","esri/layers/MapImageLayer"],{
+					esriLoader.loadModules(['esri/Map','esri/views/MapView','esri/layers/FeatureLayer',"esri/layers/TileLayer","esri/layers/WebTileLayer",
+					"esri/layers/MapImageLayer","esri/Graphic"],{
 						css:true
 					})
-					.then(([Map,MapView,FeatureLayer,TileLayer,WebTileLayer,MapImageLayer])=>{
+					.then(([Map,MapView,FeatureLayer,TileLayer,WebTileLayer,MapImageLayer,Graphic])=>{
 						let map = new Map({
 							// basemap:'streets',
 						});
@@ -500,56 +408,57 @@
 						  // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/0",
 						  // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/0",
 						   url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
-						  outFields: ["*"],
+						   outFields: ["*"],
 						  // popupTemplate: this.template,
 						});
 						// layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除
+						// layerfeaturePoi.definitionExpression = `AUDITRES IS NOT null`;//显示状态不是空的
+						// layerfeaturePoi.renderer = {//配色所有
+						//   type: "simple",  // autocasts as new SimpleRenderer()
+						//   symbol: {
+						//     type: "simple-fill", // autocasts as SimpleFillSymbol
+						//     color: [226, 119, 40,0.5],
+						//     style: "solid",
+						//     outline: {  // autocasts as new SimpleLineSymbol()
+						//       width: 0.5,
+						//       color: "white"
+						//     }
+						//   }
+						// };
 						const layerfeatureHouse = new FeatureLayer({
 						   // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/1",
 						   // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/1"
 						    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
+							visible:false
 						});
 						const layerfeatureRoad = new FeatureLayer({
 						   // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/2",
 						   // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/2"
 						    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
+							visible:false
 						});
 						map.addMany([layerfeaturePoi,layerfeatureHouse,layerfeatureRoad]);
-						this.view.on('click',function(event){
-							if(!_this.doTaskShow){
-								_this.latitudeData=event.mapPoint.latitude;
-								_this.longitudeData=event.mapPoint.longitude;
-								// console.log(_this.latitudeData,_this.longitudeData);
-								let updatelayer=_this.map.layers.items[4];//标记图层
-								_this.view.center=[_this.longitudeData,_this.latitudeData];
-								const updateEdit={
-										updateFeatures:[{
-											"geometry":{
-												type: 'point',
-												longitude: _this.longitudeData, // 经度116.29845,39.95933
-												latitude: _this.latitudeData, // 纬度
-											},
-											"attributes":{
-											   "ObjectID": updatelayer.source.items[0].attributes.ObjectID,
-											}
-										}]
-									};						
-								updatelayer.applyEdits(updateEdit)
-								.then(function(editsResult){
-									console.log(editsResult.updateFeatureResults);
-									//传坐标发送请求获取附近任务
-									// request2({
-									// 	url:'/api/lqrw/getRwList',
-									// 	header: {'Authorization':uni.getStorageSync('token')},
-									// }).then((res)=>{									
-									// 	if(res.data.Status=="success"){
-									// 		_this.tasksClass=res.data.Data;
-									// 	}
-									// });
-								})
-							}
-						})											
+						// this.view.on('click',function(event){
+						// 	if(!_this.doTaskShow){
+						// 		_this.latitudeData=event.mapPoint.latitude;
+						// 		_this.longitudeData=event.mapPoint.longitude;
+						// 		let updatelayer=_this.map.layers.items[4];//标记图层
+						// 		_this.view.center=[_this.longitudeData,_this.latitudeData];
+						// 	}
+						// })
+						this.view.on('click',(event)=>{
+							this.view.hitTest(event).then(response=>{
+								if(response.results.length>0){
+									let graphic=response.results[0].graphic;
+									debugger
+								}									
+							})
+						});
 					})
+				},
+				rdcontent(val,index){
+					this.rdVal[index+1]=val;
+					console.log(this.rdVal,this.rdVal.length);
 				},
 				radioChange(evt) {
 					if(evt.target.value=="imgMap"){
@@ -697,7 +606,11 @@
 					this.getTime();
 				},
 				doTaskContent(type){
-					this.contentType=type;debugger
+					this.contentType=type;
+					this.doTaskShow=false;
+					this.showPageOne=false;
+					// this.formdataID=id;
+					this.getTime();
 				},
 				doTasksee(id,layerindex){
 					let layerIndex=(layerindex==0 || layerindex=="点")?5:((layerindex==1 || layerindex=="线")?6:7);
@@ -749,27 +662,30 @@
 				// 		return "00:00"
 				// 	}
 				// },
-				getforInf(){
-					_this.$jweixin.getLocation({
-						type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
-						  success: function (res) {
-						    let latitude = res.latitude; 
-						    let longitude = res.longitude;
-							_this.formdata.bhlocation="经度:"+longitude+"，纬度："+latitude;
-						  },
-						  fail:function(err){
-						  	console.log(JSON.stringify(err));
-						  }
-					});	
-				},
+				// getforInf(){
+				// 	_this.$jweixin.getLocation({
+				// 		type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+				// 		  success: function (res) {
+				// 		    let latitude = res.latitude; 
+				// 		    let longitude = res.longitude;
+				// 			_this.formdata.bhlocation="经度:"+longitude+"，纬度："+latitude;
+				// 		  },
+				// 		  fail:function(err){
+				// 		  	console.log(JSON.stringify(err));
+				// 		  }
+				// 	});	
+				// },
 				getTime(){
+					  // _this.formdata.SUNTIME =new Date().getTime();
 					  let yy = new Date().getFullYear();
 					  let mm = new Date().getMonth()+1;
 					  let dd = new Date().getDate();
 					  let hh = new Date().getHours();
 					  let mf = new Date().getMinutes()<10 ? '0'+new Date().getMinutes() : new Date().getMinutes();
 					  let ss = new Date().getSeconds()<10 ? '0'+new Date().getSeconds() : new Date().getSeconds();
-					  _this.formdata.SUNTIME = yy+'/'+mm+'/'+dd+' '+hh+':'+mf;//时间
+					  this.formdata.SUNTIME = yy+'/'+mm+'/'+dd+' '+hh+':'+mf;//时间
+					  this.rdVal[0]=this.formdata.SUNTIME;
+					  return yy.toString()+mm+dd+hh+mf+ss;
 				},
 				cameraChild(index){//照片
 					uni.chooseImage({
@@ -790,24 +706,56 @@
 					    }
 					});
 				},
-				bhyesOrno(e){
-					this.formdata.bhyesIsno=e.detail.value;
-				},
-				bhtypeVal(e){
-					this.formdata.BHTYPE=e.detail.value;
-				},
+				// bhyesOrno(e){
+				// 	this.formdata.bhyesIsno=e.detail.value;
+				// },
+				// bhtypeVal(e){
+				// 	this.formdata.BHTYPE=e.detail.value;
+				// },
 				// selectOne(){
 				// 	this.formdata.BHBEFORE=document.getElementById('selectOne').value;
 				// },
 				// selectTwo(){
 				// 	this.formdata.BHAFTER=document.getElementById('selectTwo').value;
 				// },
-				getTextcontent(e){
-					let	values = e.detail.value;
-					this.formdata.BHREMARK=values;
+				// getTextcontent(e){
+				// 	let	values = e.detail.value;
+				// 	this.formdata.BHREMARK=values;
+				// },
+				nearControl(){
+					// if(!_this.doTaskShow){
+						this.latitudeData=this.view.center.latitude;
+						this.longitudeData=this.view.center.longitude;
+						let updatelayer=this.map.layers.items[4];//标记图层
+						const updateEdit={
+								updateFeatures:[{
+									"geometry":{
+										type: 'point',
+										longitude: _this.longitudeData, // 经度116.29845,39.95933
+										latitude: _this.latitudeData, // 纬度
+									},
+									"attributes":{
+									   "ObjectID": updatelayer.source.items[0].attributes.ObjectID,
+									}
+								}]
+							};						
+						updatelayer.applyEdits(updateEdit)
+						.then(function(editsResult){
+							console.log(editsResult.updateFeatureResults);
+							//传坐标发送请求获取附近任务
+							// request2({
+							// 	url:'/api/lqrw/getRwList',
+							// 	header: {'Authorization':uni.getStorageSync('token')},
+							// }).then((res)=>{									
+							// 	if(res.data.Status=="success"){
+							// 		_this.tasksClass=res.data.Data;
+							// 	}
+							// });
+						})
+					// }
 				},
 				submitImgs(){
-					if(this.formdata.BHREMARK.length<15){
+					if(this.formdataBHREMARK.length<15){
 						uni.showToast({
 							icon: 'none',
 							position: 'bottom',
@@ -820,8 +768,8 @@
 							method:"POST",
 						    data: {
 						        photos:_this.imgfilesNew,
-								id:this.formdata.ID,
-								remark:_this.formdata.BHREMARK,
+								id:this.formdataID,
+								remark:_this.formdataBHREMARK,
 						    }
 						}).then((res)=>{									
 							if(res.data.Status=="success"){
@@ -848,9 +796,22 @@
 						});
 					}
 				},
+				submitCancel(){
+					this.showPageOne=true;
+					this.showPageThree=false;
+					this.showPageBars=true;
+					this.formdata.imgfiles=this.formdataImgfiles;
+					this.taskContentObj=[];
+					// this.formdata=JSON.parse(JSON.stringify(this.formdata2));//清除内容模板
+					// this.map.layers.items[5].popupTemplate=_this.template2;
+				},
+				
 			},
 			components:{
-				taskRoad
+				taskRoad,
+				radioContent,
+				inputContent,
+				selectContent
 			},
 		}
 </script>

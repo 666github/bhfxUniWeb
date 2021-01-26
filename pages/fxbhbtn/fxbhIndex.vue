@@ -92,7 +92,7 @@
 				</view>
 			</view>
 			<view class="formDiv">
-				<b>上传时间：</b>{{formdata.SUNTIME}}
+				<b>上传时间：</b>{{getTime2(formdata.SUNTIME)}}
 			</view>
 			<view class="formDiv formDiv2" style="border-bottom: none;" v-show='!errShow'>
 				<view class="title"><b>变化类型：</b></view>
@@ -570,7 +570,7 @@
 						  outFields: ["*"],
 						  popupTemplate: _this.template,
 						});
-						layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除
+						layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除						
 						const layerfeatureHouse = new FeatureLayer({
 						  // url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/1',
 						   // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
@@ -803,7 +803,8 @@
 									_this.formdata.OLDID=results.features[0].attributes.OLDID;								
 									_this.formdata.OBJECTID=objectIdstr;
 									_this.formdata.ID=results.features[0].attributes.ID;
-									_this.formdata.SUNTIME=_this.getTime2(results.features[0].attributes.SUNTIME);//将时间戳转为日期时间展示
+									// _this.formdata.SUNTIME=_this.getTime2(results.features[0].attributes.SUNTIME);//将时间戳转为日期时间展示
+									_this.formdata.SUNTIME=results.features[0].attributes.SUNTIME;
 								})
 							});
 						}
@@ -1078,7 +1079,7 @@
 									_this.ismodifyGraphic();
 								});
 							}else{
-								_this.noGraphic.attributes.SUNTIME=_this.formdata.SUNTIME;
+								_this.noGraphic.attributes.SUNTIME=_this.formdata.SUNTIME;debugger
 								// _this.noGraphic.attributes.SUNTIME=_this.getTime2(new Date());
 								_this.noGraphic.attributes.BHTYPE=_this.formdata.BHTYPE;
 								_this.noGraphic.attributes.BHREMARK=_this.formdata.BHREMARK;
