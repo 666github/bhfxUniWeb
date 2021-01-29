@@ -152,11 +152,7 @@
 					pendingInf2:[],
 					processedInf2:[],
 					imgUrl:"http://bhfxxcx.natapp1.cc",
-					imgfilesNew:[
-						"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
-						"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
-						"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg"
-					],
+					imgfilesNew:[],
 					template:{
 						content: [{
 								type: "fields",
@@ -202,20 +198,20 @@
 								// title: "<b>现场图片</b>",
 								type: "image",
 								value: {
-								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
+								  sourceURL:"",
 								}
 							  },
 							  {
 								// title: "<b>现场图片</b>",
 								type: "image",
 								value: {
-								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
+								  sourceURL:"",
 								}
 							  },{
 								// title: "<b>现场图片</b>",
 								type: "image",
 								value: {
-								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
+								  sourceURL:"",
 								}
 							  },]
 							},]
@@ -265,20 +261,20 @@
 								// title: "<b>现场图片</b>",
 								type: "image",
 								value: {
-								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
+								  sourceURL:"",
 								}
 							  },
 							  {
 								// title: "<b>现场图片</b>",
 								type: "image",
 								value: {
-								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
+								  sourceURL:"",
 								}
 							  },{
 								// title: "<b>现场图片</b>",
 								type: "image",
 								value: {
-								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
+								  sourceURL:"",
 								}
 							  },]
 							},]
@@ -288,7 +284,7 @@
 			// components:{
 			// 	UniPagination
 			// },
-			mounted() {			
+			mounted() {
 			},
 			beforeDestroy(){
 				if(this.view){
@@ -454,25 +450,22 @@
 								// document.querySelector('.esri-ui').style.width="70%";
 								let esriUI=document.querySelector('.esri-ui').offsetHeight;
 								let esriPopup=document.querySelector('.esri-popup');
-								esriPopup.style.height='245px';
+								esriPopup.style.height='245px';console.log('esriui',document.querySelector('.esri-popup').childNodes);
 								esriPopup.style.marginTop=(esriUI - 245)+'px';
 								esriPopup.onclick=function(event){
 									let classArr=event.target.classList;
 									if(classArr.length>1){
 										for (let classname of classArr) {//下一页上一页
-											if(classname=="esri-popup__pagination-next-icon" || classname=="esri-popup__pagination-previous-icon"){											
+											if(classname=="esri-popup__pagination-next-icon" || classname=="esri-popup__pagination-previous-icon"){	
+												document.querySelector('.esri-feature__main-container').style.opacity=0;
 												_this.popupPage();
 											}
 										}
 									}
 								};
-							},2000)
+							},2000);
 						});
 						_this.view.on('click',function(event){
-							// let screenPoint={
-							// 	x:event.x,
-							// 	y:event.y
-							// }
 							_this.view.hitTest(event).then(function(response){
 								if(response.results.length>0){									
 									let id=response.results.length==1?response.results[0].graphic.attributes.ID:response.results[1].graphic.attributes.ID;									
@@ -503,21 +496,26 @@
 									})
 									let esriUI=document.querySelector('.esri-ui');
 									esriUI.style.display='none';
-									setTimeout(()=>{											
+									let getfeafields=setInterval(()=>{
 										let popupcontentKey=document.getElementsByClassName('esri-feature-fields__field-header');
 										let popupcontentVal=document.getElementsByClassName('esri-feature-fields__field-data');
-										popupcontentKey.forEach((item,index)=>{
-											if(index==0||index==1){
-												item.style.display='none';
-											}
-										});
-										popupcontentVal.forEach((item,index)=>{
-											if(index==0||index==1){
-												item.style.display='none';
-											}
-										});
-										esriUI.style.display='block';
-									},600);
+										if(popupcontentKey.length>0){										
+											console.log('getfields',popupcontentKey.length);											
+											popupcontentKey.forEach((item,index)=>{
+												if(index==0||index==1){
+													item.style.display='none';
+												}
+											});
+											popupcontentVal.forEach((item,index)=>{
+												if(index==0||index==1){
+													item.style.display='none';
+												}
+											});
+											esriUI.style.display='block';
+											clearInterval(getfeafields);
+											// console.log("popupcontentKey",popupcontentKey)
+										}
+									},500);
 								}
 							})
 						})
@@ -555,7 +553,29 @@
 								  		_this.map.layers.items[5].popupTemplate=_this.template;//更换图片模板
 								  	}else{
 								  		_this.map.layers.items[5].popupTemplate=_this.template2;//固定模板
-								  	}											
+								  	}
+									let getfeafields=setInterval(()=>{
+										let popupcontentKey=document.getElementsByClassName('esri-feature-fields__field-header');
+										let popupcontentVal=document.getElementsByClassName('esri-feature-fields__field-data');
+										if(popupcontentKey.length>0){											
+											popupcontentKey.forEach((item,index)=>{
+												if(index==0||index==1){
+													item.style.display='none';
+												}
+											});
+											popupcontentVal.forEach((item,index)=>{
+												if(index==0||index==1){
+													item.style.display='none';
+												}
+											});
+											// clearInterval(getfeafields);
+											console.log(popupcontentVal[0]);
+										}
+									},10);
+									setTimeout(()=>{
+										clearInterval(getfeafields);
+										document.querySelector('.esri-feature__main-container').style.opacity=1;
+									},100)
 								  })
 								});
 							})							
@@ -695,12 +715,12 @@
 					this.graphicLocate(val);
 				},
 				graphicLocate(val){
-					let selectSymbol={
-						type:'simple-fill',
-						color:[30,159,255,0],
-						style:'solid',
-						outline:{color:[232,23,25,1],width:10}
-					}
+					// let selectSymbol={
+					// 	type:'simple-fill',
+					// 	color:[30,159,255,0],
+					// 	style:'solid',
+					// 	outline:{color:[232,23,25,1],width:10}
+					// }
 					esriLoader.loadModules(["esri/tasks/support/Query","esri/Graphic"])
 					.then(([Query,Graphic])=>{
 						const query=new Query();
