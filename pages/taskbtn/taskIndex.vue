@@ -281,7 +281,49 @@
 							imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
 							id:2,
 						}
-					]
+					],
+					unirender:{
+						type:"unique-value",
+						field:"AUDITRES",
+						uniqueValueInfos:[
+							{
+								value:'1',
+								symbol:{
+								  type: "simple-fill", // autocasts as SimpleFillSymbol
+								  color: [126, 119, 140,0.8],
+								  style: "solid",
+								  outline: {  // autocasts as SimpleLineSymbol
+									color: "red",
+									width: 1
+								  }
+								}
+							},
+							{
+								value:'2',
+								symbol:{
+								  type: "simple-fill", // autocasts as SimpleFillSymbol
+								  color: [226, 119, 40,0.8],
+								  style: "solid",
+								  outline: {  // autocasts as SimpleLineSymbol
+									color: "red",
+									width: 1
+								  }
+								}
+							},
+							{
+								value:'',
+								symbol:{
+								  type: "simple-fill", // autocasts as SimpleFillSymbol
+								  color: [124,206,124,0.8],
+								  style: "solid",
+								  outline: {  // autocasts as SimpleLineSymbol
+									color: "blue",
+									width: 1
+								  }
+								}
+							},								
+						]
+					},
 				}
 			},
 			beforeDestroy(){
@@ -437,6 +479,7 @@
 						    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
 							visible:false
 						});
+						layerfeaturePoi.renderer=this.unirender;
 						map.addMany([layerfeaturePoi,layerfeatureHouse,layerfeatureRoad]);
 						// this.view.on('click',function(event){
 						// 	if(!_this.doTaskShow){

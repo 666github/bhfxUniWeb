@@ -279,6 +279,48 @@
 							  },]
 							},]
 						},
+					unirender:{
+						type:"unique-value",
+						field:"AUDITRES",
+						uniqueValueInfos:[
+							{
+								value:'1',
+								symbol:{
+								  type: "simple-fill", // autocasts as SimpleFillSymbol
+								  color: [126, 119, 140,0.8],
+								  style: "solid",
+								  outline: {  // autocasts as SimpleLineSymbol
+									color: "red",
+									width: 1
+								  }
+								}
+							},
+							{
+								value:'2',
+								symbol:{
+								  type: "simple-fill", // autocasts as SimpleFillSymbol
+								  color: [226, 119, 40,0.8],
+								  style: "solid",
+								  outline: {  // autocasts as SimpleLineSymbol
+									color: "red",
+									width: 1
+								  }
+								}
+							},
+							{
+								value:'',
+								symbol:{
+								  type: "simple-fill", // autocasts as SimpleFillSymbol
+								  color: [124,206,124,0.8],
+								  style: "solid",
+								  outline: {  // autocasts as SimpleLineSymbol
+									color: "blue",
+									width: 1
+								  }
+								}
+							},								
+						]
+					},
 				}
 			},
 			// components:{
@@ -435,6 +477,7 @@
 						  popupTemplate: _this.template,
 						});
 						// layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除
+						layerfeaturePoi.renderer=this.unirender;
 						map.add(layerfeaturePoi);
 						// const layerfeatureHouse = new FeatureLayer({
 						//    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",

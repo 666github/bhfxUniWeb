@@ -393,6 +393,48 @@
 							  },]
 							},]
 						},
+						unirender:{
+							type:"unique-value",
+							field:"AUDITRES",
+							uniqueValueInfos:[
+								{
+									value:'1',
+									symbol:{
+									  type: "simple-fill", // autocasts as SimpleFillSymbol
+									  color: [126, 119, 140,0.8],
+									  style: "solid",
+									  outline: {  // autocasts as SimpleLineSymbol
+										color: "red",
+										width: 1
+									  }
+									}
+								},
+								{
+									value:'2',
+									symbol:{
+									  type: "simple-fill", // autocasts as SimpleFillSymbol
+									  color: [226, 119, 40,0.8],
+									  style: "solid",
+									  outline: {  // autocasts as SimpleLineSymbol
+										color: "red",
+										width: 1
+									  }
+									}
+								},
+								{
+									value:'',
+									symbol:{
+									  type: "simple-fill", // autocasts as SimpleFillSymbol
+									  color: [124,206,124,0.8],
+									  style: "solid",
+									  outline: {  // autocasts as SimpleLineSymbol
+										color: "blue",
+										width: 1
+									  }
+									}
+								},								
+							]
+						},
 						xiugai:false,
 						jchz:false
 				}
@@ -570,7 +612,8 @@
 						  outFields: ["*"],
 						  popupTemplate: _this.template,
 						});
-						layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除						
+						layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除
+						layerfeaturePoi.renderer=this.unirender;
 						const layerfeatureHouse = new FeatureLayer({
 						  // url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/1',
 						   // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
@@ -1132,76 +1175,76 @@
 						});
 					}else{
 						console.log('addGraphic',_this.addGraphic,_this.formdata);					
-						// if(_this.xiugai){
+						if(_this.xiugai){
 							_this.getTime();console.log(_this.formdata.SUNTIME)
-							if(_this.addGraphic!=null){
+							if(_this.addGraphic!=null){//修改有图形
 								_this.map.layers.items[5].applyEdits({
 									updateFeatures: [_this.addGraphic]
 								}).then(res=>{console.log(res.updateFeatureResults)
 								// let objectIdstr=res.updateFeatureResults[0].objectId;
 									_this.ismodifyGraphic();
 								});
+							}else{//修改无图形
+								_this.noGraphic.attributes.SUNTIME=_this.formdata.SUNTIME;
+								// _this.noGraphic.attributes.SUNTIME=_this.getTime2(new Date());
+								_this.noGraphic.attributes.BHTYPE=_this.formdata.BHTYPE;
+								_this.noGraphic.attributes.BHREMARK=_this.formdata.BHREMARK;
+								_this.noGraphic.attributes.BHBEFORE=_this.formdata.BHBEFORE;
+								_this.noGraphic.attributes.BHAFTER=_this.formdata.BHAFTER;
+								_this.map.layers.items[5].applyEdits({
+									updateFeatures: [_this.noGraphic]
+								}).then(res=>{
+									_this.ismodifyGraphic();
+								});
+							}														
+						}else{
+							if(_this.addGraphic!=null){
+								_this.map.layers.items[5].applyEdits({
+								    addFeatures: [_this.addGraphic]
+								}).then(res=>{
+									let addId=res.addFeatureResults[0].objectId;
+									let id=_this.addGraphic.attributes.ID;
+									// 将id和图片链接集合提交
+									request2({
+										url:'/api/bhfx/submitphotos',
+										method:"POST",
+										header: {'Authorization': uni.getStorageSync('token')},
+										data: {
+											// "id":addId,
+											"id":id,
+											"photos":_this.imgfilesNew
+										},
+									})
+									.then((res)=>{
+										if(res.data.Status=="success"){
+											_this.map.layers.items[5].refresh();					
+										}else{//提交失败删除
+											_this.map.layers.items[5].applyEdits({
+											    deleteFeatures: [{objectId:addId}]
+											});
+											uni.showModal({
+												title: '提交信息',
+												content:'提交失败，重新操作',
+												showCancel: false,						
+												confirmText: '关闭'
+											})
+										}
+										_this.showPageOne=true;
+										_this.showPageThree=false;
+										_this.showPageBars=true;
+										_this.map.layers.items[5].popupTemplate=_this.template2;//固定模板
+										_this.formdata=JSON.parse(JSON.stringify(_this.formdata2));//清空内容区
+									})
+								});
 							}else{
-								if(_this.xiugai){//纠错必须绘制
-									_this.noGraphic.attributes.SUNTIME=_this.formdata.SUNTIME;debugger
-									// _this.noGraphic.attributes.SUNTIME=_this.getTime2(new Date());
-									_this.noGraphic.attributes.BHTYPE=_this.formdata.BHTYPE;
-									_this.noGraphic.attributes.BHREMARK=_this.formdata.BHREMARK;
-									_this.noGraphic.attributes.BHBEFORE=_this.formdata.BHBEFORE;
-									_this.noGraphic.attributes.BHAFTER=_this.formdata.BHAFTER;
-									_this.map.layers.items[5].applyEdits({
-										updateFeatures: [_this.noGraphic]
-									}).then(res=>{
-										_this.ismodifyGraphic();
-									});
-								}else{
 									uni.showModal({
-										title: '纠错信息',
+										title: '提示信息',
 										content:'请绘制范围',
 										showCancel: false,						
 										confirmText: '关闭'
 									})
-								}
-							}														
-						// }else{
-						// 	_this.map.layers.items[5].applyEdits({
-						// 	    addFeatures: [_this.addGraphic]
-						// 	}).then(res=>{
-						// 		// let addId=res.addFeatureResults[0].objectId;
-						// 		let id=_this.addGraphic.attributes.ID;
-						// 		// 将id和图片链接集合提交
-						// 		request2({
-						// 			url:'/api/bhfx/submitphotos',
-						// 			method:"POST",
-						// 			header: {'Authorization': uni.getStorageSync('token')},
-						// 			data: {
-						// 				// "id":addId,
-						// 				"id":id,
-						// 				"photos":_this.imgfilesNew
-						// 			},
-						// 		})
-						// 		.then((res)=>{
-						// 			if(res.data.Status=="success"){
-						// 				_this.map.layers.items[5].refresh();					
-						// 			}else{//提交失败删除
-						// 				_this.map.layers.items[5].applyEdits({
-						// 				    deleteFeatures: [{objectId:addId}]
-						// 				});
-						// 				uni.showModal({
-						// 					title: '提交信息',
-						// 					content:'提交失败，重新操作',
-						// 					showCancel: false,						
-						// 					confirmText: '关闭'
-						// 				})
-						// 			}
-						// 			_this.showPageOne=true;
-						// 			_this.showPageThree=false;
-						// 			_this.showPageBars=true;
-						// 			_this.map.layers.items[5].popupTemplate=_this.template2;//固定模板
-						// 			_this.formdata=JSON.parse(JSON.stringify(_this.formdata2));//清空内容区
-						// 		})
-						// 	});
-						// }
+							}
+						}
 					}
 				},
 				ismodifyGraphic(){
