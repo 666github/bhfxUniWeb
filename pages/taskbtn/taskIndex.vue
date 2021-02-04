@@ -46,7 +46,7 @@
 				<view v-show="!doTaskShow" class="tastContent">
 					<view v-for="(item,index) in tasksClass" :key="item.index" class="taskItem" @click="doTasksee(item.GUID)">
 						<view class="taskItemChild">
-							<view class="itemName">大类({{item.NAME}})</view>
+							<view class="itemName">大类名称({{item.NAME}})</view>
 							<view class="naviTo">{{item.DESCRIPTION}}</view>
 						</view>
 						<view class="taskItemChild">
@@ -134,17 +134,17 @@
 					checkboxitems: [
 						{
 							value: 'poi',
-							name: '上报点',
+							name: '任务点',
 							checked:"true"
 						},
 						{
 							value:'line',
-							name: '上报线',
+							name: '任务线',
 							checked:"true"
 						},
 						{
 							value: 'polygon',
-							name: '上报面',
+							name: '任务面',
 							checked:"true"
 						},
 					],
@@ -293,7 +293,7 @@
 								  color: [126, 119, 140,0.8],
 								  style: "solid",
 								  outline: {  // autocasts as SimpleLineSymbol
-									color: "red",
+									color: "white",
 									width: 1
 								  }
 								}
@@ -305,7 +305,7 @@
 								  color: [226, 119, 40,0.8],
 								  style: "solid",
 								  outline: {  // autocasts as SimpleLineSymbol
-									color: "red",
+									color: "white",
 									width: 1
 								  }
 								}
@@ -317,7 +317,7 @@
 								  color: [124,206,124,0.8],
 								  style: "solid",
 								  outline: {  // autocasts as SimpleLineSymbol
-									color: "blue",
+									color: "white",
 									width: 1
 								  }
 								}
@@ -449,11 +449,11 @@
 						const layerfeaturePoi = new FeatureLayer({
 						  // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/0",
 						  // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/0",
-						   url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
+						   // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
+						   url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/0",
 						   outFields: ["*"],
 						  // popupTemplate: this.template,
 						});
-						// layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除
 						// layerfeaturePoi.definitionExpression = `AUDITRES IS NOT null`;//显示状态不是空的
 						// layerfeaturePoi.renderer = {//配色所有
 						//   type: "simple",  // autocasts as new SimpleRenderer()
@@ -470,14 +470,14 @@
 						const layerfeatureHouse = new FeatureLayer({
 						   // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/1",
 						   // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/1"
-						    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
-							visible:false
+						    url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/1",
+							// visible:false
 						});
 						const layerfeatureRoad = new FeatureLayer({
 						   // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/2",
 						   // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/2"
-						    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
-							visible:false
+						    url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/2",
+							// visible:false
 						});
 						layerfeaturePoi.renderer=this.unirender;
 						map.addMany([layerfeaturePoi,layerfeatureHouse,layerfeatureRoad]);
@@ -571,35 +571,35 @@
 					});
 				},
 				dotaskFirst(){//做任务列表
-					request2({
-						url:'/api/lqrw/getOwnLQRws',
-						header: {'Authorization':uni.getStorageSync('token')},
-					}).then((res)=>{									
-						if(res.data.Status=="success"){
-							_this.dotaskLists=res.data.Data;
-							let timerun=setInterval(()=>{//倒计时
-								_this.dotaskLists.forEach((item,index) =>{
-									let timeRemain=new Date(item.LQTIME).getTime()+30*60*1000 -new Date().getTime();
-									console.log(new Date(timeRemain).toLocaleString())
-									if(timeRemain>0){
-										item.TIME = new Date(timeRemain).toLocaleString().substring(13,18);
-										// _this.dotaskLists[index].TIME= new Date(timeRemain).toLocaleString().substring(13,18);
-									}else{
-										item.TIME="00:00";
-										// _this.dotaskLists[index].TIME="00:00";
+					// request2({
+					// 	url:'/api/lqrw/getOwnLQRws',
+					// 	header: {'Authorization':uni.getStorageSync('token')},
+					// }).then((res)=>{									
+					// 	if(res.data.Status=="success"){
+					// 		_this.dotaskLists=res.data.Data;
+					// 		let timerun=setInterval(()=>{//倒计时
+					// 			_this.dotaskLists.forEach((item,index) =>{
+					// 				let timeRemain=new Date(item.LQTIME).getTime()+30*60*1000 -new Date().getTime();
+					// 				console.log(new Date(timeRemain).toLocaleString())
+					// 				if(timeRemain>0){
+					// 					item.TIME = new Date(timeRemain).toLocaleString().substring(13,18);
+					// 					// _this.dotaskLists[index].TIME= new Date(timeRemain).toLocaleString().substring(13,18);
+					// 				}else{
+					// 					item.TIME="00:00";
+					// 					// _this.dotaskLists[index].TIME="00:00";
 										
-									}
-									_this.$set(_this.dotaskLists,index,_this.dotaskLists[index]);//将修改后的值赋给dotasklists
-									console.log(9)
-								});
-								if(_this.dotaskLists.every((item)=>{
-									return item.TIME=="00:00";
-								})){//都是0,清除定时
-									clearInterval(timerun);
-								}
-							},1000);
-						}
-					});
+					// 				}
+					// 				_this.$set(_this.dotaskLists,index,_this.dotaskLists[index]);//将修改后的值赋给dotasklists
+					// 				console.log(9)
+					// 			});
+					// 			if(_this.dotaskLists.every((item)=>{
+					// 				return item.TIME=="00:00";
+					// 			})){//都是0,清除定时
+					// 				clearInterval(timerun);
+					// 			}
+					// 		},1000);
+					// 	}
+					// });
 				},				
 				collapseChange(e){
 					if(e.length>this.tasksIndex.length){
@@ -635,7 +635,7 @@
 							id:id,
 							// type
 						},
-					}).then((res)=>{									
+					}).then((res)=>{debugger									
 						if(res.data.Status=="success"){
 							_this.taskClassFirst();//更新领取列表
 							_this.dotaskFirst();//更新做任务列表
@@ -781,7 +781,7 @@
 									   "ObjectID": updatelayer.source.items[0].attributes.ObjectID,
 									}
 								}]
-							};						
+							};console.log(this.latitudeData,this.longitudeData);					
 						updatelayer.applyEdits(updateEdit)
 						.then(function(editsResult){
 							console.log(editsResult.updateFeatureResults);

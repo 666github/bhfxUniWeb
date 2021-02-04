@@ -33,9 +33,9 @@
 				<view class="tollthree">
 					<view class="localControl tollIcon" @click="localtionControl"></view>
 				</view>
-				<view class="tollfour" v-show="!showPageThree">
+				<!-- <view class="tollfour" v-show="!showPageThree">
 					<view class="helpControlerr tollIcon"></view>
-				</view>
+				</view> -->
 				<view class="tollsix" v-show="showPageThree">
 					<view class="clearControl tollIcon" @click="drawEventClear"></view>
 				</view>
@@ -67,8 +67,8 @@
 			</view>
 		</view>
 		<!-- 修改本图形 -->
-		<view class="modifyOwn" v-show="popupShow2&&subuserShow&&checkstateShow" @click="modifyProp">修改</view>
-		<view class="modifyOwn" v-show="popupShow2&&!subuserShow&&checkstateShowerr" @click="helpControlerr">纠错</view>
+		<!-- <view class="modifyOwn" v-show="popupShow2&&subuserShow&&checkstateShow" @click="modifyProp">修改</view> -->
+		<!-- <view class="modifyOwn" v-show="popupShow2&&!subuserShow&&checkstateShowerr" @click="helpControlerr">纠错</view> -->
 		<!-- dierye -->
 		<!-- <formContent v-show="!showPageOne" :formdata="formdata" :imgfilesNew="imgfilesNew" :radios="radios" :errShow="errShow" :current="current" :imgUrl="imgUrl">
 			<radio-group @change="radioerrType" v-show='errShow' slot="typeRadio">
@@ -87,12 +87,12 @@
 		<view class="bhfxIndex" v-show="!showPageOne">
 			<view class="phototitle">拍照</view>
 			<view class="cameraDiv">
-				<view class="cameraChild" @click="cameraChild(index)" v-for="(item,index) in formdata.imgfiles">
-					<image :src="item.imagesrc" :key="item.id" mode="scaleToFill" ref="cameraImg" class="cameraImg"/>
+				<view class="cameraChild" @click="cameraChild(index)" v-for="(item,index) in formdata.imgfiles"  :key="index" >
+					<image :src="item.imagesrc" mode="scaleToFill" ref="cameraImg" class="cameraImg"/>
 				</view>
 			</view>
 			<view class="formDiv">
-				<b>上传时间：</b>{{getTime2(formdata.SUNTIME)}}
+				<b>上传时间：</b>{{formdata.SUNTIME | getTime2}}
 			</view>
 			<view class="formDiv formDiv2" style="border-bottom: none;" v-show='!errShow'>
 				<view class="title"><b>变化类型：</b></view>
@@ -171,18 +171,18 @@
 					],
 					checkboxitems: [
 						{
-							value: 'poi',
-							name: 'POI',
+							value: 'bhfxpoi',
+							name: '变化发现',
 							checked: 'true'
 						},
-						{
-							value: 'house',
-							name: '房屋'							
-						},
-						{
-							value: 'road',
-							name: '道路'							
-						},
+						// {
+						// 	value: 'bhfxline',
+						// 	name: '变化发现二',						
+						// },
+						// {
+						// 	value: 'bhfxplg',
+						// 	name: '变化发现三',							
+						// },
 					],
 					current: 0,
 					longitudeData:0,
@@ -192,20 +192,7 @@
 					symbol:null,
 					renderer:null,
 					formdata:{
-						imgfiles:[
-							{
-								imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
-								id:0,
-							},
-							{
-								imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
-								id:1,
-							},
-							{
-								imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
-								id:2,
-							}
-						],
+						imgfiles:[],
 						SUNTIME:"",						
 						BHTYPE:"新增",
 						BHREMARK:"",						
@@ -268,8 +255,12 @@
 					noGraphic:null,
 					imgUrl:"http://bhfxxcx.natapp1.cc",
 					imgfilesNew:[],
+					xgjc:'0',
 					template:{
-						content: [{
+						// title:function(){return `<span class="xg">${_this.xgjc}</span>`},
+						title:function(){return `<span class="xg" style='color:#fd3f31;padding-left:10px;'></span>`},
+						content: [
+							{
 								type: "fields",
 								fieldInfos: [
 									{
@@ -375,20 +366,20 @@
 								// title: "<b>现场图片</b>",
 								type: "image",
 								value: {
-								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
+								  sourceURL:"",
 								}
 							  },
 							  {
 								// title: "<b>现场图片</b>",
 								type: "image",
 								value: {
-								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
+								  sourceURL:"",
 								}
 							  },{
 								// title: "<b>现场图片</b>",
 								type: "image",
 								value: {
-								  sourceURL:"https://www.sunset.com/wp-content/uploads/96006df453533f4c982212b8cc7882f5-800x0-c-default.jpg",
+								  sourceURL:"",
 								}
 							  },]
 							},]
@@ -404,7 +395,7 @@
 									  color: [126, 119, 140,0.8],
 									  style: "solid",
 									  outline: {  // autocasts as SimpleLineSymbol
-										color: "red",
+										color: "white",
 										width: 1
 									  }
 									}
@@ -416,7 +407,7 @@
 									  color: [226, 119, 40,0.8],
 									  style: "solid",
 									  outline: {  // autocasts as SimpleLineSymbol
-										color: "red",
+										color: "white",
 										width: 1
 									  }
 									}
@@ -428,7 +419,7 @@
 									  color: [124,206,124,0.8],
 									  style: "solid",
 									  outline: {  // autocasts as SimpleLineSymbol
-										color: "blue",
+										color: "white",
 										width: 1
 									  }
 									}
@@ -458,11 +449,11 @@
 								}
 							});
 							esriUI.style.display='block';
-							_this.popupShow2=val;
-						},600)			
+							// _this.popupShow2=val;
+						},600);
 					}else{
-						_this.popupShow2=val;
-					}
+						// _this.popupShow2=val;console.log(this.popupShow,val,_this.popupShow2);
+					}				
 				}
 			},				
 			components:{
@@ -475,6 +466,17 @@
 				if(this.view){
 					this.view.container = null;
 				}
+			},
+			filters:{
+				getTime2(timestr){
+					let yy = new Date(timestr).getFullYear();
+					let mm = new Date(timestr).getMonth()+1;
+					let dd = new Date(timestr).getDate();
+					let hh = new Date(timestr).getHours();
+					let mf = new Date(timestr).getMinutes()<10 ? '0'+new Date(timestr).getMinutes() : new Date(timestr).getMinutes();
+					let ss = new Date(timestr).getSeconds()<10 ? '0'+new Date(timestr).getSeconds() : new Date(timestr).getSeconds();
+					return  yy+'/'+mm+'/'+dd+' '+hh+':'+mf+':'+ss;
+				},
 			},
 			onShow(){
 				_this=this;
@@ -511,15 +513,16 @@
 							// zoom:8,
 							zoom:15,
 							//固定popup，取消浮动
-							// popup:{
+							popup:{
 							// 	// dockEnabled:true,  //将popup固定住
 							// 	dockOptions:{
 							// 		buttonEnabld:false,  //将切换固定状态的那个按钮隐藏掉
 							// 		// breakpoint:false,//但是如果是true或去掉不写，popup将不固定
 							// 		position:"bottom-center",
 							// 	},
-							// 	// alignment:"bottom-center",								
-							// }
+							// 	// alignment:"bottom-center",	
+								collapseEnabled : false,
+							}
 						});
 						_this.view.ui._removeComponents(['zoom']);//去掉缩放图标
 						_this.view.ui._removeComponents(["attribution"]);//去掉ersilogo
@@ -527,25 +530,6 @@
 						_this.draw = new Draw({
 						  view: _this.view
 						});				
-						//影像切片
-						// let imageLayer=new TileLayer({	
-						// 	// url:"https://elevation3d.arcgis.com/arcgis/rest/services/NatGeo_World_Map/MapServer"
-						// 	// url:"bhfx.miyanoshiho.com/arcgis/rest/services/2019_HP/MapServer",
-						// 	url:"http://36.110.90.250:36080/arcgis/rest/services/2019_HP/MapServer",
-						// 	visible:false
-						//   });
-						// map.add(imageLayer);//影像切片图
-						// let imageLayer2=new MapImageLayer({
-						// 	// url:"bhfx.miyanoshiho.com/arcgis/rest/services/GuoTuDuCha/GTDC/MapServer",	
-						// 	url:"http://36.110.90.250:6082/arcgis/rest/services/GuoTuDuCha/GTDC/MapServer"
-						//   });
-						// map.add(imageLayer2);//模拟天地
-						// let webTile=new WebTileLayer({
-						//    urlTemplate: 'https://stamen-tiles-{subDomain}.a.ssl.fastly.net/terrain/{level}/{col}/{row}.png',
-						//    subDomains: ['a', 'b', 'c', 'd'],
-						//    visible:false
-						//  });
-						// map.add(webTile);//天地图	
 						//实例化影像图
 						let key="f29efb9949daf6dea11ec683f5ddc278";
 						let imgTiteLayer = new WebTileLayer({
@@ -614,21 +598,22 @@
 						});
 						layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除
 						layerfeaturePoi.renderer=this.unirender;
-						const layerfeatureHouse = new FeatureLayer({
-						  // url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/1',
-						   // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
-						   // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
-						   url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
-						   visible:false
-						});
-						const layerfeatureRoad = new FeatureLayer({
-						  // url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/2',
-						   // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
-						   // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
-						   url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
-						   visible:false
-						});
-					    map.addMany([layerfeaturePoi,layerfeatureHouse,layerfeatureRoad]);
+						// const layerfeatureHouse = new FeatureLayer({
+						//   // url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/1',
+						//    // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
+						//    // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
+						//    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
+						//    visible:false
+						// });
+						// const layerfeatureRoad = new FeatureLayer({
+						//   // url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/2',
+						//    // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
+						//    // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
+						//    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
+						//    visible:false
+						// });
+					 //    map.addMany([layerfeaturePoi,layerfeatureHouse,layerfeatureRoad]);
+						map.add(layerfeaturePoi);
 						_this.view.on('click',function(event){
 							let screenPoint={
 								x:event.x,
@@ -636,7 +621,7 @@
 							}
 							if(_this.showPageBars){
 								_this.view.hitTest(screenPoint).then(function(response){
-									if(response.results.length>0){
+									if(response.results.length>0){									
 										let id=response.results[0].graphic.attributes.ID;
 										let checkState=response.results[0].graphic.attributes.AUDITRES;//审核状态
 										// _this.formdata.ID=id;
@@ -668,11 +653,16 @@
 													confirmText: '关闭'
 												})
 												_this.map.layers.items[5].popupTemplate=_this.template2;//固定模板
-											}											
+											}
+											if(_this.subuserShow&&_this.checkstateShow){
+												layerfeaturePoi.popupTemplate.title=`<span class="xg" style='color:#fd3f31;padding-left:10px;'>修改</span>`
+											}else if(!_this.subuserShow&&_this.checkstateShow){
+												layerfeaturePoi.popupTemplate.title=`<span class="xg" style='color:#fd3f31;padding-left:10px;'>纠错</span>`
+											}
 										})
 										_this.$nextTick(function(){
 											_this.popupShow=true;											
-										})									
+										});										
 									}else{
 										_this.popupShow=false;
 									}									
@@ -700,15 +690,15 @@
 							setTimeout(()=>{
 								let esriUI=document.querySelector('.esri-ui').offsetHeight;
 								let esriPopup=document.querySelector('.esri-popup');
-								esriPopup.style.height='275px';
-								esriPopup.style.marginTop=(esriUI - 275)+'px';
+								esriPopup.style.height='295px';
+								esriPopup.style.marginTop=(esriUI - 295)+'px';
 								esriPopup.onclick=function(event){
 									let classArr=event.target.classList;
 									if(classArr.length>1){
-										for (let classname of classArr) {//关闭弹框
-											if(classname=="esri-icon-close"){
+										for (let classname of classArr) {
+											if(classname=="esri-icon-close"){//关闭弹框
 												_this.popupShow=false;
-											}
+											}										
 										}
 										for (let classname of classArr) {//下一页上一页
 											if(classname=="esri-popup__pagination-next-icon" || classname=="esri-popup__pagination-previous-icon"){
@@ -716,6 +706,12 @@
 												document.querySelector('.esri-feature__main-container').style.opacity=0;
 												_this.popupPage();
 											}
+										}
+									}else if(classArr[0]=='xg'){//修改纠错
+										if(_this.subuserShow&&_this.checkstateShow){
+											_this.modifyProp();
+										}else if(!_this.subuserShow&&_this.checkstateShowerr){
+											_this.helpControlerr();
 										}
 									}
 								};
@@ -756,8 +752,19 @@
 								  			_this.map.layers.items[5].popupTemplate.content[1].mediaInfos[index].value.sourceURL=_this.imgUrl+item;											
 								  		});
 								  		_this.map.layers.items[5].popupTemplate=_this.template;//更换图片模板
+										if(_this.subuserShow&&_this.checkstateShow){//修改纠错
+											_this.map.layers.items[5].popupTemplate.title=`<span class="xg" style='color:#fd3f31;padding-left:10px;'>修改</span>`
+										}else if(!_this.subuserShow&&_this.checkstateShow){
+											_this.map.layers.items[5].popupTemplate.title=`<span class="xg" style='color:#fd3f31;padding-left:10px;'>纠错</span>`
+										}
 								  	}else{
 								  		_this.map.layers.items[5].popupTemplate=_this.template2;//固定模板
+										uni.showModal({
+											title: '图片信息',
+											content:'图片加载失败',
+											showCancel: false,						
+											confirmText: '关闭'
+										})
 								  	}									
 									let getfeafields=setInterval(()=>{
 										let popupcontentKey=document.getElementsByClassName('esri-feature-fields__field-header');
@@ -774,7 +781,7 @@
 												}
 											});
 											// clearInterval(getfeafields);
-											console.log(popupcontentVal[0]);
+											// console.log(popupcontentVal[0]);
 										}
 									},10);
 									setTimeout(()=>{
@@ -893,118 +900,20 @@
 				modifyProp(){//修改
 					// let esriPopupId=document.querySelector('.esri-feature-fields__field-data').innerText;
 					// let objectIdstr=Number(esriPopupId.substr(1));
-					// let ID=document.getElementsByClassName('esri-feature-fields__field-data')[1].innerText;
-					// //请求后台获取图片
-					// request2({
-					// 	url:'/api/bhfx/getphotos',
-					// 	header: {'Authorization':uni.getStorageSync('token')},
-					// 	data: {
-					// 		id:ID
-					// 	},
-					// }).then((res)=>{
-					// 	if(res.data.Status=="success"){//点击图形更改图片路径											
-					// 		let dataArr=res.data.Data;
-					// 		dataArr.forEach((item,index)=>{
-					// 			_this.formdata.imgfiles[index]={
-					// 				imagesrc:_this.imgUrl+item,
-					// 				id:index
-					// 			}
-					// 			_this.imgfilesNew[index]=item;
-					// 		});
-					// 		console.log("修改",_this.imgfilesNew);
-					// 		//渲染属性
-					// 		esriLoader.loadModules(["esri/tasks/support/Query"])
-					// 		.then(([Query])=>{
-					// 			const query=new Query();
-					// 			query.where= "OBJECTID = '"+ objectIdstr +"'";
-					// 			_this.map.layers.items[5].queryFeatures(query).then(function(results){
-					// 				_this.noGraphic=results.features[0];
-					// 				_this.formdata.BHTYPE=results.features[0].attributes.BHTYPE;
-					// 				_this.formdata.BHREMARK=results.features[0].attributes.BHREMARK;
-					// 				_this.formdata.BHBEFORE=results.features[0].attributes.BHBEFORE;
-					// 				_this.formdata.BHAFTER=results.features[0].attributes.BHAFTER;
-					// 				_this.formdata.SUBUSER=uni.getStorageSync('phone');
-					// 				_this.formdata.OLDID=results.features[0].attributes.OLDID;								
-					// 				_this.formdata.OBJECTID=objectIdstr;
-					// 				_this.formdata.ID=results.features[0].attributes.ID;
-					// 				// _this.formdata.SUNTIME=_this.getTime2(results.features[0].attributes.SUNTIME);//将时间戳转为日期时间展示
-					// 				_this.formdata.SUNTIME=results.features[0].attributes.SUNTIME;
-					//				_this.formdata.BHTYPE=="新增"?_this.current=0:(_this.formdata.BHTYPE=="拆除"?_this.current=1:this.current=2);
-					// 			})
-					// 		});
-					// 	}
-					// })
-								
-					// if(document.getElementsByClassName('esri-popup__button').length>0){
-					// 	document.getElementsByClassName('esri-popup__button')[0].click();
-					// }
-					// _this.popupShow=false;
-					// _this.errShow=true;
-					// _this.showPageOne=false;
-					// _this.showPageBars=false;
 					this.modifyErrContent();
 					this.getTime();
-					//// _this.map.layers.items[5].applyEdits({
-					////     deleteFeatures:[{objectId:objectIdstr}]
-					////  });
+					// this.map.layers.items[5].applyEdits({
+					//     deleteFeatures:[{objectId:objectIdstr}]
+					//  });
 					this.xiugai=true;
 				},					
 				helpControlerr(){//纠错
-					// let esriPopupId=document.querySelector('.esri-feature-fields__field-data').innerText;
-					// let objectIdstr=esriPopupId.substr(1);
-					// esriLoader.loadModules(["esri/tasks/support/Query"])
-					// .then(([Query])=>{
-					// 	const query=new Query();
-					// 	query.where= "OBJECTID = '"+objectIdstr +"'";
-					// 	_this.map.layers.items[5].queryFeatures(query).then(function(results){
-					// 	  let checkState=results.features[0].attributes.AUDITRES;console.log('状态',checkState)
-					// 	  // if(checkState=='1'){//1审核通过
-					// 		  _this.formdata={
-					// 			imgfiles:[
-					// 				{
-					// 					imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
-					// 					id:0,
-					// 				},
-					// 				{
-					// 					imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
-					// 					id:1,
-					// 				},
-					// 				{
-					// 					imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
-					// 					id:2,
-					// 				}
-					// 			],
-					// 			SUNTIME:"",						
-					// 			BHTYPE:"新增",
-					// 			BHREMARK:"",						
-					// 			BHBEFORE:'',
-					// 			BHAFTER:'',
-					// 			SUBUSER:uni.getStorageSync('phone'),
-					// 			ID:'',
-					// 			OLDID:results.features[0].attributes.ID
-					// 		  }
-							  
-					// 		  if(document.getElementsByClassName('esri-popup__button').length>0){
-					// 			document.getElementsByClassName('esri-popup__button')[0].click();
-					// 		  }
-					// 		  _this.popupShow=false;
-					// 		  _this.errShow=true;
-					// 		  _this.showPageOne=false;
-					// 		  _this.showPageBars=false;
-					// 		  _this.formdata.ID=_this.getTime();
-					// 		  _this.current=0;
-					// 		  _this.xiugai=false;
-					// 	});							
-					// });
 					this.modifyErrContent();
 				    // this.current=0;
 					this.xiugai=false;
 					console.log(0,this.formdata);
 				},
 				newaddBtn(){
-					// uni.navigateTo({
-					// 	url:"/pages/fxbhbtn/fxbhConten?current=0"
-					// })
 					this.formdata=JSON.parse(JSON.stringify(this.formdata2));
 					this.current=0;
 					this.getforInf();
@@ -1056,15 +965,6 @@
 					  // _this.formdata.SUNTIME = yy+'/'+mm+'/'+dd+' '+hh+':'+mf+':'+ss;//时间				  
 					  return yy.toString()+mm+dd+hh+mf+ss;
 				},
-				getTime2(timestr){
-					let yy = new Date(timestr).getFullYear();
-					let mm = new Date(timestr).getMonth()+1;
-					let dd = new Date(timestr).getDate();
-					let hh = new Date(timestr).getHours();
-					let mf = new Date(timestr).getMinutes()<10 ? '0'+new Date(timestr).getMinutes() : new Date(timestr).getMinutes();
-					let ss = new Date(timestr).getSeconds()<10 ? '0'+new Date(timestr).getSeconds() : new Date(timestr).getSeconds();
-					return  yy+'/'+mm+'/'+dd+' '+hh+':'+mf+':'+ss;
-				},
 				cameraChild(index){//照片
 					uni.chooseImage({
 					    count: 1, //默认9
@@ -1086,20 +986,10 @@
 					    }
 					});
 				},
-				// selectOne(){
-				// 	// console.log(this.formdata.BHBEFORE)
-				// 	// this.formdata.BHBEFORE=document.getElementById('selectOne').value;
-				// },
-				// selectTwo(){
-				// 	// this.formdata.BHAFTER=document.getElementById('selectTwo').value;
-				// },
 				drawRange(){//点击绘制
 					this.showPageOne=true;					
 					this.showPageBars=false;
 					this.showPageThree=true;
-					// uni.navigateTo({
-					// 	url:"/pages/fxbhbtn/drawIndex"
-					// })
 				},
 				drawEventClear(){//清除
 					this.draw.reset();//清除重置
@@ -1186,7 +1076,6 @@
 								});
 							}else{//修改无图形
 								_this.noGraphic.attributes.SUNTIME=_this.formdata.SUNTIME;
-								// _this.noGraphic.attributes.SUNTIME=_this.getTime2(new Date());
 								_this.noGraphic.attributes.BHTYPE=_this.formdata.BHTYPE;
 								_this.noGraphic.attributes.BHREMARK=_this.formdata.BHREMARK;
 								_this.noGraphic.attributes.BHBEFORE=_this.formdata.BHBEFORE;
@@ -1248,14 +1137,13 @@
 					}
 				},
 				ismodifyGraphic(){
-					_this.map.layers.items[5].refresh();
-					_this.showPageOne=true;
-					_this.showPageThree=false;
-					_this.showPageBars=true;
-					_this.checkstateShow=false;
-					_this.checkstateShowerr=false;
-					_this.map.layers.items[5].popupTemplate=_this.template2;//固定模板
-					_this.xiugai=false;
+					this.showPageOne=true;
+					this.showPageThree=false;
+					this.showPageBars=true;
+					this.checkstateShow=false;
+					this.checkstateShowerr=false;
+					this.map.layers.items[5].popupTemplate=_this.template2;//固定模板
+					this.xiugai=false;
 					request2({
 						url:'/api/bhfx/submitphotos',
 						method:"POST",
@@ -1276,6 +1164,7 @@
 								confirmText: '关闭'
 							})
 						}
+						_this.map.layers.items[5].refresh();
 					})
 				},
 				submitCancel(){
@@ -1283,7 +1172,7 @@
 					this.showPageThree=false;
 					this.showPageBars=true;
 					this.formdata=JSON.parse(JSON.stringify(this.formdata2));//清除内容模板
-					_this.map.layers.items[5].popupTemplate=_this.template2;
+					this.map.layers.items[5].popupTemplate=this.template2;
 				},
 			}
 		}

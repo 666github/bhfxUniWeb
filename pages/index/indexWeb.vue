@@ -290,7 +290,7 @@
 								  color: [126, 119, 140,0.8],
 								  style: "solid",
 								  outline: {  // autocasts as SimpleLineSymbol
-									color: "red",
+									color: "white",
 									width: 1
 								  }
 								}
@@ -302,7 +302,7 @@
 								  color: [226, 119, 40,0.8],
 								  style: "solid",
 								  outline: {  // autocasts as SimpleLineSymbol
-									color: "red",
+									color: "white",
 									width: 1
 								  }
 								}
@@ -314,7 +314,7 @@
 								  color: [124,206,124,0.8],
 								  style: "solid",
 								  outline: {  // autocasts as SimpleLineSymbol
-									color: "blue",
+									color: "white",
 									width: 1
 								  }
 								}
@@ -493,7 +493,7 @@
 								// document.querySelector('.esri-ui').style.width="70%";
 								let esriUI=document.querySelector('.esri-ui').offsetHeight;
 								let esriPopup=document.querySelector('.esri-popup');
-								esriPopup.style.height='245px';console.log('esriui',document.querySelector('.esri-popup').childNodes);
+								esriPopup.style.height='245px';
 								esriPopup.style.marginTop=(esriUI - 245)+'px';
 								esriPopup.onclick=function(event){
 									let classArr=event.target.classList;
