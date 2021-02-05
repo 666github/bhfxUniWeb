@@ -35,13 +35,16 @@ uni-page-head{display: none!important;}
 		/* overflow-y: auto; */
 	}
 	.bottomBtns{width:140rpx;height: 140rpx;line-height:140rpx;border-radius: 50%;background-color:#7dc5eb;background-size: 80% 80%;background-repeat: no-repeat;background-position: center center;}
-	.taskItem{display: flex;justify-content: space-between;padding: 0 5px;border-bottom: solid 1px lightgray;}
-	.itemMoney,.itemName{font-size: 16px; color:red;padding: 5px 0;}
-	.itemName{text-align: left;padding-left: 25px;}
+	.taskItem{background-color: #7ad18a;color: white;padding: 5px 2px;border-bottom: solid 1px lightgray;box-shadow: 2px 2px 5px grey;margin: 15px;border-radius: 5px;}
+	.taskItem2{display: flex;justify-content: space-between;border-radius: 5px;background-color: #a7a0e2;color: white;}
+	.taskItemZ{display:flex;justify-content: space-between;/* background-color: rgba(172, 165, 230, 0.8); */margin-top: 5px;padding: 0 5px;}
+	/* .itemName{color: #2196f3cc;} */
+	.itemMoney{color: red;}
+	.itemMoney,.itemName,.itemNameZ{font-size: 16px;padding: 5px 0;}
+	/* .itemNameZ{text-align: left;padding-left: 25px;} */
 	.getTask,.doTask{width: 80px;padding: 0;margin: 0 5px;}
-	.naviTo{padding-left: 25px;text-align: left;
-	background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAC10lEQVQ4T52UTWhcVRzFf2cmadJGmbyHFSwkosnEhaSLFqQU/NpoEaxiMAhKFGoTzaRKVCxdKHUhgvGLmPcgoqQUlai1koJdVBAVvzaKqKt5k4gRgwuZSdKm2EzmHUkwkLZTFO/2nvvj/s8594r/scKx5Hqk/ZYfMt5s9JL+M+eV3za3Np/rFe4X7LZJLWYEHbaX/hUUxDPbodYv3Ae63HjG5khKtpQlfdtwXPJd9UFH/2gJT5++D7kfdAP2EuJYiibmB/OfB+PT7dTSH7FPAj8Inj0PlItLOzNO9wseQGoxfCUzUSb3HoUrz6zZMD63JVhZ+haoVmrsDrJ6CvlJMe7GsFZ60OYxiW7sOaOjNfTWYqGzdKGHYVT80OKWc7Xm7rMH2ufCKDmMeFRBlJxAvl1oymiickXHKXpVqxdCGCdP2IzYvnV+qOuLVU0QJ8/L9CmMi4uYT9Llxn3zw9fMXyrF1rHiTcroU1kHy4XOl9d1QVwcwfQoiIpPS3oOXDWKa5uaX1x8uK28Ebjl9dltTdm/fpL5rFzo6tm4F0al11C6Z83sy0aTrY0NDAsPYTUYD1cKXeNrB0aTpiDL10BjpaFlFwPbzm4EBVESATeel1owPp1jJR0B+lJtumph8OpKEBXfRbqDbGZ7ZaBj9sLRgyh5A9h5UY/CqNSGPJum3O0Md2bMvmo2e++ZR649Vj+A4hHQdXULGUbF31NpErM3IzqN/0yt+xcK+VMX3ShO3gG31QUFcTIp2AHkbQ55tSemXfBquaHzIAOqrgPDOHkfO6wLao1LBzJ41Ktq6SSp9xhPSdoL/jnNqmdhID/9T48+AprqgnJjyY5Mxt8ZllcFTtU7P5SfCuNkF/g4KAc8Xh7MvxlExY+RVuo/2sPOBFtLVcu1TKqby0P5b9ZHycW/BlkvTyJuM5zA7kb68pLfSC5KXkB8vzCY/6BeWkGcHJJ5BvFLlew9fwOSBjckRkLkjwAAAABJRU5ErkJggg==") no-repeat;}
-	/* .taskItemChild{display: flex;flex-direction: column;} */
+	.naviTo{text-align: left;padding:0 0 0 20px;background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAC10lEQVQ4T52UTWhcVRzFf2cmadJGmbyHFSwkosnEhaSLFqQU/NpoEaxiMAhKFGoTzaRKVCxdKHUhgvGLmPcgoqQUlai1koJdVBAVvzaKqKt5k4gRgwuZSdKm2EzmHUkwkLZTFO/2nvvj/s8594r/scKx5Hqk/ZYfMt5s9JL+M+eV3za3Np/rFe4X7LZJLWYEHbaX/hUUxDPbodYv3Ae63HjG5khKtpQlfdtwXPJd9UFH/2gJT5++D7kfdAP2EuJYiibmB/OfB+PT7dTSH7FPAj8Inj0PlItLOzNO9wseQGoxfCUzUSb3HoUrz6zZMD63JVhZ+haoVmrsDrJ6CvlJMe7GsFZ60OYxiW7sOaOjNfTWYqGzdKGHYVT80OKWc7Xm7rMH2ufCKDmMeFRBlJxAvl1oymiickXHKXpVqxdCGCdP2IzYvnV+qOuLVU0QJ8/L9CmMi4uYT9Llxn3zw9fMXyrF1rHiTcroU1kHy4XOl9d1QVwcwfQoiIpPS3oOXDWKa5uaX1x8uK28Ebjl9dltTdm/fpL5rFzo6tm4F0al11C6Z83sy0aTrY0NDAsPYTUYD1cKXeNrB0aTpiDL10BjpaFlFwPbzm4EBVESATeel1owPp1jJR0B+lJtumph8OpKEBXfRbqDbGZ7ZaBj9sLRgyh5A9h5UY/CqNSGPJum3O0Md2bMvmo2e++ZR649Vj+A4hHQdXULGUbF31NpErM3IzqN/0yt+xcK+VMX3ShO3gG31QUFcTIp2AHkbQ55tSemXfBquaHzIAOqrgPDOHkfO6wLao1LBzJ41Ktq6SSp9xhPSdoL/jnNqmdhID/9T48+AprqgnJjyY5Mxt8ZllcFTtU7P5SfCuNkF/g4KAc8Xh7MvxlExY+RVuo/2sPOBFtLVcu1TKqby0P5b9ZHycW/BlkvTyJuM5zA7kb68pLfSC5KXkB8vzCY/6BeWkGcHJJ5BvFLlew9fwOSBjckRkLkjwAAAABJRU5ErkJggg==") no-repeat left center;}
+	
 	/* 右侧工具 */
 	.rightToll{position: absolute;right: 5px;top: 20px;}
 	.tollone{height: 60px;position: relative;}
@@ -78,7 +81,7 @@ uni-page-head{display: none!important;}
 	.tastTab{margin: 10px 0;}
 	.tastTab>span{padding: 5px 10px;margin: 0 10px;cursor: pointer;}
 	.tastTitle{border-bottom: solid 2px blue;color:#9191ea}
-	.tastContent,.doTaskDiv{height: calc(100% - 44px);overflow-y: auto;}
+	.tastContent,.doTaskDiv{height: calc(100% - 44px);overflow-y: auto;background-color:#f0eefb;}
 	.submitBtns{display: flex;justify-content: space-around;}
 	.submitBtn{width: 100px;margin: 0 40rpx;}
 	#selectOne,#selectTwo{border-radius: 5px;padding: 0 2px;}

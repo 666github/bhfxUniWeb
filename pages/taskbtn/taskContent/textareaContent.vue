@@ -1,29 +1,26 @@
 <template>
-<view class="formDiv"  style="display: flex;justify-content: flex-start;" >
-	<b>{{labelname}}:</b>
-	<input @input="radioChange" type='number' class="uni-input uniinput" focus v-for="(item,index) in values" :key="item.id"  :placeholder="item.inputval" />
+<view class="formDiv" >
+	<view><b>{{consinfo.title}}:</b></view>
+	<textarea :placeholder="consinfo.placeholder" class="formTextarea" v-model="bhfxReamark" />
 </view>
 </template>
 
 <script>
 	var _this;
 	export default {
-		props:{
-			labelname:String,
-			values:Array,
-		},
+		props:['comId','consinfo'],
 		data() {
 			return {
-				
+				bhfxReamark:''
 			}
 		},
-		methods: {
-			radioChange(e){
-				this.$emit('rdcontent',e.detail.value)
+		watch:{
+			bhfxReamark(val){
+				this.$emit('rdcontent',{Id:this.comId,value:val});
 			}
-		}
+		},
 	}
 </script>
 <style>
-	.uniinput{padding-left: 5px;}
+	.formTextarea{width: 100%;height: 150rpx;background: lightgray;}
 </style>

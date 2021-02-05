@@ -621,7 +621,7 @@
 							}
 							if(_this.showPageBars){
 								_this.view.hitTest(screenPoint).then(function(response){
-									if(response.results.length>0){									
+									if(response.results.length>0){								
 										let id=response.results[0].graphic.attributes.ID;
 										let checkState=response.results[0].graphic.attributes.AUDITRES;//审核状态
 										// _this.formdata.ID=id;

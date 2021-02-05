@@ -1,17 +1,14 @@
 <template>
 <view class="formDiv"  style="display: flex;justify-content: flex-start;" >
-	<b>{{labelname}}:</b>
-	<input @input="radioChange" type='number' class="uni-input uniinput" focus v-for="(item,index) in values" :key="item.id"  :placeholder="item.inputval" />
+	<b>{{consinfo.title}}:</b>
+	<input @input="radioChange" type='number' class="uni-input uniinput"  :placeholder="consinfo.placeholder" />
 </view>
 </template>
 
 <script>
-	var _this;
+	// var _this;
 	export default {
-		props:{
-			labelname:String,
-			values:Array,
-		},
+		props:['comId','consinfo'],
 		data() {
 			return {
 				
@@ -19,7 +16,7 @@
 		},
 		methods: {
 			radioChange(e){
-				this.$emit('rdcontent',e.detail.value)
+				this.$emit('rdcontent',{Id:this.comId,value:e.detail.value});
 			}
 		}
 	}

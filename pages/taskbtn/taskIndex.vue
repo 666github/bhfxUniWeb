@@ -44,32 +44,38 @@
 					<span :class="{'tastTitle':!doTaskShow}" @click='lqrw'>领取任务</span> <span :class="{'tastTitle':doTaskShow}" @click='zrw'>做任务</span>
 				</view>
 				<view v-show="!doTaskShow" class="tastContent">
-					<view v-for="(item,index) in tasksClass" :key="item.index" class="taskItem" @click="doTasksee(item.GUID)">
-						<view class="taskItemChild">
-							<view class="itemName">大类名称({{item.NAME}})</view>
-							<view class="naviTo">{{item.DESCRIPTION}}</view>
+					<view v-for="(item,index) in tasksClass" :key="index" class="taskItem" @click="doTasksee(item.ZRW.GUID,item.ZRW.TYPE)">
+						<view >
+							<view class="itemName naviTo">{{item.RW.NAME}}:{{item.RW.DESCRIPTION}}</view>
+							<!-- <view class="naviTo"></view> -->																			
 						</view>
-						<view class="taskItemChild">
-							<view class="itemMoney">{{item.DISTANCE}}m {{item.AMOUNT || 0}}元</view>
-							<view>
-								<button class="getTask" size="mini" @click.stop="getTaskToDo(item.GUID)">领取任务</button>
+						<view class="taskItemZ">
+							<view class="taskItemChild">
+								<view class="itemNameZ">{{item.ZRW.QU}}{{item.ZRW.XZ}}</view>
+								<view>{{item.ZRW.NYREMARK}}</view>
 							</view>
-						</view>
+							<view class="taskItemChild">
+								<view class="itemMoney">{{item.ZRW.DISTANCE}}m {{item.ZRW.AMOUNT || 0}}元</view>
+								<view>
+									<button class="getTask" type="primary" size="mini" @click.stop="getTaskToDo(item.ZRW.GUID,item.ZRW.TYPE)">领取任务</button>
+								</view>
+							</view>							
+						</view>	
 					</view>				
 				</view>				
 				<view class="doTaskDiv" v-show="doTaskShow">
 					<!-- <view class="getTaskTitle">已领取</view> -->
-					<view  class="taskItem haveGotTask" v-for="(item,index) in dotaskLists" :key="item.index" @click="doTasksee(item.GUID,item.TYPE)">
-						<view class="taskItemChild" >
+					<view  class="taskItem2 haveGotTask" v-for="(item,index) in dotaskLists" :key="item.index" @click="doTasksee(item.GUID,item.TYPE)">
+						<view class="taskItemChild2" >
 							<!-- <view class="itemName">{{item.NAME}} 时间:{{resetTime30(item.LQTIME)}}</view> -->
-							<view class="itemName">{{item.NAME}} 时间:{{item.TIME}}</view>
-							<view class="naviTo">{{item.NYREMARK}}</view>
+							<view class="itemName naviTo" style="margin: 5px 0;">{{item.NAME}} 时间:{{item.TIME}}</view>
+							<view class="">{{item.NYREMARK}}</view>
 						</view>
-						<view class="taskItemChild">
-							<view class="itemMoney">**m {{item.AMOUNT || 0}}元</view>
+						<view class="taskItemChild2">
+							<view class="itemMoney">{{item.AMOUNT/100 || 0}}元</view>
 							<view style="display: flex;justify-content: space-between">															
 								<!-- <button type="primary" size="mini" class="doTask" @click.stop="doTask(item.ID)" :disabled="item.TIME=='00:00'">做任务</button> -->
-								<button type="primary" size="mini" class="doTask" @click.stop="doTaskContent('taskRoad')" :disabled="item.TIME=='00:00'">做任务</button>
+								<button type="primary" size="mini" class="doTask" @click.stop="doTaskContent(item.TEMPLATEID,item.ID)" :disabled="item.TIME=='00:00'">{{item.TIME=='00:00'?'已超时':'做任务'}}</button>
 							</view>
 						</view>						
 					</view>
@@ -89,11 +95,11 @@
 			<view class="formDiv">
 				<b>上传时间：</b>{{formdata.SUNTIME}}
 			</view>
-			<component :is="item.type" @rdcontent="rdcontent($event,index)"   v-for="(item,index) in taskContentObj" :key='index' :labelname='item.name' :values="item.tkContent"></component>
-			<view class="formDiv">
+			<component v-for="(item,index) in taskContentObj" :key='index' :is="item.TYPE" :consinfo="JSON.parse(item.CONSINFO)" :comId="item.ID" @rdcontent="rdcontent($event,index)" ></component>
+			<!-- <view class="formDiv">
 				<view><b>变化详情：（大于15字）</b></view>
 				<textarea  placeholder="请输入您的详细描述" class="formTextarea" v-model="formdataBHREMARK"/>
-			</view>
+			</view> -->
 			<view class="submitBtns">
 				<button class="submitBtn" type="primary" @click="submitImgs">提交</button>
 				<button class="submitBtn" type="primary" @click="submitCancel">取消</button>
@@ -108,10 +114,11 @@
 	var _this;
 	import esriLoader from 'esri-loader';
 	import {appLoginWx,request,request2,VxgetLocation} from '@/pages/network/appLoginWx.js'
-	import taskRoad from '@/pages/taskbtn/taskRoad.vue'
-	import radioContent from '@/pages/taskbtn/taskContent/radioContent.vue'
-	import inputContent from '@/pages/taskbtn/taskContent/inputContent.vue'
-	import selectContent from '@/pages/taskbtn/taskContent/selectContent.vue'
+	// import taskRoad from '@/pages/taskbtn/taskRoad.vue'
+	import mpRadio from '@/pages/taskbtn/taskContent/radioContent.vue'
+	import mpInput from '@/pages/taskbtn/taskContent/inputContent.vue'
+	import mpSelect from '@/pages/taskbtn/taskContent/selectContent.vue'
+	import mpTextArea from '@/pages/taskbtn/taskContent/textareaContent.vue'
 		export default {
 			data() {
 				return {
@@ -199,71 +206,10 @@
 					contentType:'',
 					taskContentObj:[
 						{
-							type:'radioContent',
-							name:'是否找到',
-							tkContent:[
-								{
-									id:1,
-									radioval:'是'
-								},
-								{
-									id:0,
-									radioval:'否'
-								},
-							],
-						},
-						{
-							type:'selectContent',
-							name:'前期状态',
-							tkContent:[
-							],
-						},
-						{
-							type:'radioContent',
-							name:'变化类型',
-							tkContent:[
-								{
-									id:2,
-									radioval:'新增'
-								},
-								{
-									id:1,
-									radioval:'拆除'
-								},
-								{
-									id:0,
-									radioval:'改造'
-								},
-							],
-						},
-						{
-							type:'radioContent',
-							name:'道路状态',
-							tkContent:[
-								{
-									id:2,
-									radioval:'施工'
-								},
-								{
-									id:1,
-									radioval:'竣工'
-								},
-								{
-									id:0,
-									radioval:'通车'
-								},
-							],
-						},
-						{
-							type:'inputContent',
-							name:'车辆数量',
-							tkContent:[
-								{
-									id:0,
-									inputval:'请输入车辆数量'
-								},
-							],
-						},					
+							type:'radioContent',//"mpRadio"
+							ID:'',
+							CONSINFO:'{"title":"未命名","required":true,"labels":["未命名1","未命名2"]}'
+						},				
 					],
 					rdVal:[],
 					formdataBHREMARK:'',
@@ -356,11 +302,11 @@
 			mounted(){
 				this.tasksInit();
 			},
-			watch:{
-				formdataBHREMARK(val){
-					this.rdVal[this.taskContentObj.length+1]=val;
-				}
-			},
+			// watch:{
+			// 	formdataBHREMARK(val){
+			// 		this.rdVal[this.taskContentObj.length+1]=val;
+			// 	}
+			// },
 			methods: {
 				creatMapview(){
 					esriLoader.loadModules(['esri/Map','esri/views/MapView','esri/layers/FeatureLayer',"esri/layers/TileLayer","esri/layers/WebTileLayer",
@@ -491,17 +437,17 @@
 						// })
 						this.view.on('click',(event)=>{
 							this.view.hitTest(event).then(response=>{
-								if(response.results.length>0){
+								if(response.results.length>0){debugger
 									let graphic=response.results[0].graphic;
-									debugger
+									
 								}									
 							})
 						});
 					})
 				},
 				rdcontent(val,index){
-					this.rdVal[index+1]=val;
-					console.log(this.rdVal,this.rdVal.length);
+					this.rdVal[index]=val;
+					console.log(this.rdVal,val);
 				},
 				radioChange(evt) {
 					if(evt.target.value=="imgMap"){
@@ -561,45 +507,52 @@
 					this.dotaskFirst();				
 				},
 				taskClassFirst(){//大任务列表
+					// request2({
+					// 	url:'/api/lqrw/getRwList',
+					// 	header: {'Authorization':uni.getStorageSync('token')},
+					// }).then((res)=>{									
+					// 	if(res.data.Status=="success"){
+					// 		_this.tasksClass=res.data.Data;
+					// 	}
+					// });
+					console.log('taskinit',this.latitudeData);
 					request2({
-						url:'/api/lqrw/getRwList',
+						url:'/api/lqrw/GetAroundRws',
 						header: {'Authorization':uni.getStorageSync('token')},
-					}).then((res)=>{									
+						// data:{lon:_this.longitudeData,lat:_this.latitudeData}
+						data:{lon:116.352036,lat:39.900413}
+					}).then((res)=>{							
 						if(res.data.Status=="success"){
 							_this.tasksClass=res.data.Data;
 						}
 					});
 				},
 				dotaskFirst(){//做任务列表
-					// request2({
-					// 	url:'/api/lqrw/getOwnLQRws',
-					// 	header: {'Authorization':uni.getStorageSync('token')},
-					// }).then((res)=>{									
-					// 	if(res.data.Status=="success"){
-					// 		_this.dotaskLists=res.data.Data;
-					// 		let timerun=setInterval(()=>{//倒计时
-					// 			_this.dotaskLists.forEach((item,index) =>{
-					// 				let timeRemain=new Date(item.LQTIME).getTime()+30*60*1000 -new Date().getTime();
-					// 				console.log(new Date(timeRemain).toLocaleString())
-					// 				if(timeRemain>0){
-					// 					item.TIME = new Date(timeRemain).toLocaleString().substring(13,18);
-					// 					// _this.dotaskLists[index].TIME= new Date(timeRemain).toLocaleString().substring(13,18);
-					// 				}else{
-					// 					item.TIME="00:00";
-					// 					// _this.dotaskLists[index].TIME="00:00";
-										
-					// 				}
-					// 				_this.$set(_this.dotaskLists,index,_this.dotaskLists[index]);//将修改后的值赋给dotasklists
-					// 				console.log(9)
-					// 			});
-					// 			if(_this.dotaskLists.every((item)=>{
-					// 				return item.TIME=="00:00";
-					// 			})){//都是0,清除定时
-					// 				clearInterval(timerun);
-					// 			}
-					// 		},1000);
-					// 	}
-					// });
+					request2({
+						url:'/api/lqrw/getOwnLQRws',
+						header: {'Authorization':uni.getStorageSync('token')},
+					}).then((res)=>{								
+						if(res.data.Status=="success"){
+							_this.dotaskLists=res.data.Data;
+							let timerun=setInterval(()=>{//倒计时
+								_this.dotaskLists.forEach((item,index) =>{
+									let timeRemain=new Date(item.LQTIME).getTime()+30*60*1000 -new Date().getTime();
+									console.log(new Date(timeRemain).toLocaleString())
+									if(timeRemain>0){
+										item.TIME = new Date(timeRemain).toLocaleString().substring(13,18);
+									}else{
+										item.TIME="00:00";										
+									}
+									_this.$set(_this.dotaskLists,index,_this.dotaskLists[index]);//将修改后的值赋给dotasklists
+								});
+								if(_this.dotaskLists.every((item)=>{
+									return item.TIME=="00:00";
+								})){//都是0,清除定时
+									clearInterval(timerun);
+								}
+							},1000);
+						}
+					});
 				},				
 				collapseChange(e){
 					if(e.length>this.tasksIndex.length){
@@ -608,8 +561,6 @@
 						this.getTaskPoiLinePoly(_this.classId);
 					}					
 					this.tasksIndex=e;
-					// this.plpBoolean=0;
-					// this.taskItemtype="点"
 				},
 				getTaskPoiLinePoly(id){
 					request2({
@@ -627,13 +578,13 @@
 					// this.plpBoolean=index;
 					// this.taskItemtype=type;
 				},
-				getTaskToDo(id){				
+				getTaskToDo(id,type){			
 					request2({
 						url:'/api/lqrw/lq',//领取每个小任务
 						header: {'Authorization':uni.getStorageSync('token')},
 						data: {
 							id:id,
-							// type
+							type
 						},
 					}).then((res)=>{debugger									
 						if(res.data.Status=="success"){
@@ -648,22 +599,43 @@
 					this.formdata.ID=id;
 					this.getTime();
 				},
-				doTaskContent(type){
-					this.contentType=type;
-					this.doTaskShow=false;
-					this.showPageOne=false;
-					// this.formdataID=id;
-					this.getTime();
+				doTaskContent(templateid,id){debugger
+					// this.contentType=type;
+					request2({
+						url:'/api/lqrw/GetTemplateById',//领取每个小任务
+						header: {'Authorization':uni.getStorageSync('token')},
+						data: {
+							id:templateid,
+							// type
+						},
+					}).then((res)=>{									
+						if(res.data.Status=="success"){
+							let taskarr=res.data.Data
+							taskarr.shift();
+							_this.taskContentObj=taskarr;debugger
+							this.doTaskShow=false;
+							this.showPageOne=false;
+							this.formdataID=id;
+							this.getTime();
+						}
+					})
+					
 				},
-				doTasksee(id,layerindex){
-					let layerIndex=(layerindex==0 || layerindex=="点")?5:((layerindex==1 || layerindex=="线")?6:7);
+				doTasksee(id,type){
+					let layerIndex=(type=="点"?5:(type=="线")?6:7);
 					esriLoader.loadModules(["esri/tasks/support/Query","esri/Graphic"])
 					.then(([Query,Graphic])=>{
 						const query=new Query();
 						query.where= "GUID = '"+id +"'";
+						query.returnGeometry = true;
 						_this.map.layers.items[layerIndex].queryFeatures(query).then(function(results){
-							if(layerindex!==0 && layerindex!=="点"){
-								_this.view.goTo(results.features[0].geometry.extent.expand(1)).then(function () {
+							if(type!=="点"){
+								_this.view.goTo({
+									target:results.features[0].geometry,
+									center:[results.features[0].geometry.extent.center.longitude,results.features[0].geometry.extent.center.latitude],
+									zoom:16,
+									},{duration: 1000})
+								.then(function () {
 									_this.view.graphics.removeAll();
 									let addGraphic = new Graphic({
 										geometry:results.features[0].geometry,
@@ -675,14 +647,17 @@
 											color: "red",
 											width: 1
 										  }
-										},
-										// attributes: _this.formdata
+										}
 									});	
 									_this.view.graphics.add(addGraphic);
 								});
-							}else{
-								_this.view.goTo({target:results.features[0].geometry,zoom:5},{duration: 1000}).then(function () {//放点坐标不行放geometry
-									_this.view.graphics.removeAll();console.log(layerIndex);
+							}else{							
+								_this.view.goTo({
+									center:[results.features[0].geometry.longitude,results.features[0].geometry.latitude],
+									zoom:16,
+									},{duration: 1000})
+								.then(function () {
+									_this.view.graphics.removeAll();
 									let addGraphic = new Graphic({
 										geometry:results.features[0].geometry,//放new点不行放geometry
 										symbol: {
@@ -696,28 +671,6 @@
 						})
 					})
 				},
-				// resetTime30(oldtime){
-				// 	let timeRemain=new Date(oldtime).getTime()+30*60*1000 -new Date().getTime();
-				// 	console.log(new Date(timeRemain).toLocaleString())
-				// 	if(timeRemain>0){
-				// 		return new Date(timeRemain).toLocaleString().substring(13,18);
-				// 	}else{
-				// 		return "00:00"
-				// 	}
-				// },
-				// getforInf(){
-				// 	_this.$jweixin.getLocation({
-				// 		type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
-				// 		  success: function (res) {
-				// 		    let latitude = res.latitude; 
-				// 		    let longitude = res.longitude;
-				// 			_this.formdata.bhlocation="经度:"+longitude+"，纬度："+latitude;
-				// 		  },
-				// 		  fail:function(err){
-				// 		  	console.log(JSON.stringify(err));
-				// 		  }
-				// 	});	
-				// },
 				getTime(){
 					  // _this.formdata.SUNTIME =new Date().getTime();
 					  let yy = new Date().getFullYear();
@@ -727,7 +680,7 @@
 					  let mf = new Date().getMinutes()<10 ? '0'+new Date().getMinutes() : new Date().getMinutes();
 					  let ss = new Date().getSeconds()<10 ? '0'+new Date().getSeconds() : new Date().getSeconds();
 					  this.formdata.SUNTIME = yy+'/'+mm+'/'+dd+' '+hh+':'+mf;//时间
-					  this.rdVal[0]=this.formdata.SUNTIME;
+					  // this.rdVal[0]={SUNTIME:this.formdata.SUNTIME};
 					  return yy.toString()+mm+dd+hh+mf+ss;
 				},
 				cameraChild(index){//照片
@@ -781,63 +734,56 @@
 									   "ObjectID": updatelayer.source.items[0].attributes.ObjectID,
 									}
 								}]
-							};console.log(this.latitudeData,this.longitudeData);					
+							};				
 						updatelayer.applyEdits(updateEdit)
 						.then(function(editsResult){
-							console.log(editsResult.updateFeatureResults);
 							//传坐标发送请求获取附近任务
-							// request2({
-							// 	url:'/api/lqrw/getRwList',
-							// 	header: {'Authorization':uni.getStorageSync('token')},
-							// }).then((res)=>{									
-							// 	if(res.data.Status=="success"){
-							// 		_this.tasksClass=res.data.Data;
-							// 	}
-							// });
+							request2({
+								url:'/api/lqrw/GetAroundRws',
+								header: {'Authorization':uni.getStorageSync('token')},
+								// data:{lon:_this.longitudeData,lat:_this.latitudeData}
+								data:{lon:116.352036,lat:39.900413}
+							}).then((res)=>{debugger								
+								if(res.data.Status=="success"){
+									_this.tasksClass=res.data.Data;
+								}
+							});
 						})
 					// }
 				},
 				submitImgs(){
-					if(this.formdataBHREMARK.length<15){
-						uni.showToast({
-							icon: 'none',
-							position: 'bottom',
-							title: '变化详情不能少于15个字'
-						});
-					}else{
-						request2({
-						    url:'/api/lqrw/submit',
-						    header: {'Authorization':uni.getStorageSync('token')},
-							method:"POST",
-						    data: {
-						        photos:_this.imgfilesNew,
-								id:this.formdataID,
-								remark:_this.formdataBHREMARK,
-						    }
-						}).then((res)=>{									
-							if(res.data.Status=="success"){
-								this.doTaskShow=true;
-								this.showPageOne=true;
-								this.dotaskFirst();
-								// 提交后清空页面
-								this.formdata.BHREMARK="";
-								this.formdata.imgfiles=[
-									{
-										imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
-										id:0,
-									},
-									{
-										imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
-										id:1,
-									},
-									{
-										imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
-										id:2,
-									}
-								];
-							}
-						});
-					}
+					request2({
+						url:'/api/lqrw/submit',
+						header: {'Authorization':uni.getStorageSync('token')},
+						method:"POST",
+						data: {
+							photos:this.imgfilesNew,
+							id:this.formdataID,
+							remark:JSON.stringify(this.rdVal),//对象
+						}
+					}).then((res)=>{debugger									
+						if(res.data.Status=="success"){
+							this.doTaskShow=true;
+							this.showPageOne=true;
+							this.dotaskFirst();
+							// 提交后清空页面
+							// this.formdata.BHREMARK="";
+							this.formdata.imgfiles=[
+								{
+									imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
+									id:0,
+								},
+								{
+									imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
+									id:1,
+								},
+								{
+									imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
+									id:2,
+								}
+							];
+						}
+					});
 				},
 				submitCancel(){
 					this.showPageOne=true;
@@ -851,10 +797,14 @@
 				
 			},
 			components:{
-				taskRoad,
-				radioContent,
-				inputContent,
-				selectContent
+				// taskRoad,
+				// radioContent,
+				// inputContent,
+				// selectContent
+				mpRadio,
+				mpInput,
+				mpSelect,
+				mpTextArea
 			},
 		}
 </script>

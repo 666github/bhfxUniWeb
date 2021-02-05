@@ -1,42 +1,27 @@
 <template>
 <view class="formDiv formDiv2">
-	<b>{{labelname}}:</b>
+	<b>{{consinfo.title}}:</b>
 	<radio-group @change="radioChange">
-		<label v-for="(item,index) in values" :key="item.id"  class="radioLabel">
-			<radio :value="item.radioval" /><text>{{item.radioval}}</text>
+		<label v-for="(item,index) in consinfo.labels" :key="index"  class="radioLabel">
+			<radio :value="item" /><text>{{item}}</text>
 		</label>
 	</radio-group>
 </view>
 </template>
 
 <script>
-	var _this;
+	// var _this;
 	export default {
-		props:{
-			labelname:String,
-			// formdata:Object,
-			// imgfilesNew:Array,
-			// errShow:Boolean,
-			values:Array,
-			// current:Number,
-			// imgUrl:String
-		},
+		props:['comId','consinfo'],
 		data() {
 			return {
 				
 			}
 		},
-		created(){
-			_this=this;
-		},
 		methods: {
 			radioChange(e){
-				this.$emit('rdcontent',e.detail.value)
-				console.log();
+				this.$emit('rdcontent',{Id:this.comId,value:e.detail.value});
 			}
-		},
-		updated(){
-			console.log('updated')
 		}
 	}
 </script>
