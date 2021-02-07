@@ -14,7 +14,7 @@
 			    <uni-collapse-item :title="'待处理('+pendingInf.length+')'" >
 			        <view class="pendingInf">
 						<ul class='lists'>
-							<li v-for="item in pendingInf" :key="item.OBJECTID" @click="pendingEvent(item.OBJECTID)">
+							<li v-for="item in pendingInf" :key="item.OBJECTID" @click="graphicLocate(item.OBJECTID,'任务')">
 								变化类型：{{item.BHTYPE}}; 变换前：{{item.BHBEFORE}}; 变化后：{{item.BHAFTER}}; 单价：{{item.AMOUNT}}; 变化详情：{{item.BHREMARK}}; 上传时间：{{item.SUNTIME}};
 							</li>
 						</ul>
@@ -23,7 +23,7 @@
 				<uni-collapse-item :title="'已处理('+processedInf.length+')'" >
 					<view class="processedInf">
 						<ul class='lists'>
-							<li v-for="item in processedInf" :key="item.OBJECTID" @click="processedEvent(item.OBJECTID)">
+							<li v-for="item in processedInf" :key="item.OBJECTID" @click="graphicLocate(item.OBJECTID,'任务')">
 								变化类型：{{item.BHTYPE}}; 变换前：{{item.BHBEFORE}}; 变化后：{{item.BHAFTER}}; 单价：{{item.AMOUNT}};拒绝原因：{{item.REJECTRMK}}; 变化详情：{{item.BHREMARK}}; 上传时间：{{item.SUNTIME}};
 							</li>
 						</ul>
@@ -31,10 +31,10 @@
 				</uni-collapse-item>
 			</uni-collapse>
 			<uni-collapse v-show="doTaskShow">
-			    <uni-collapse-item :title="'任务待处理('+pendingInf2.length+')'" >
+			    <uni-collapse-item :title="'待处理('+pendingInf2.length+')'" >
 			        <view class="pendingInf">
 						<ul class='lists'>
-							<li v-for="item in pendingInf2" :key="item.OBJECTID" @click="pendingEvent(item.OBJECTID)">
+							<li v-for="item in pendingInf2" :key="item.OBJECTID" @click="graphicLocate(item.OBJECTID,item.TYPE)">
 								变化类型：{{item.BHTYPE}}; 变换前：{{item.BHBEFORE}}; 变化后：{{item.BHAFTER}}; 单价：{{item.AMOUNT}}; 变化详情：{{item.BHREMARK}}; 上传时间：{{item.SUNTIME}};
 							</li>
 						</ul>
@@ -43,7 +43,7 @@
 				<uni-collapse-item :title="'已处理('+processedInf2.length+')'" >
 					<view class="processedInf">
 						<ul class='lists'>
-							<li v-for="item in processedInf2" :key="item.OBJECTID" @click="processedEvent(item.OBJECTID)">
+							<li v-for="item in processedInf2" :key="item.OBJECTID" @click="graphicLocate(item.OBJECTID,item.TYPE)">
 								变化类型：{{item.BHTYPE}}; 变换前：{{item.BHBEFORE}}; 变化后：{{item.BHAFTER}}; 单价：{{item.AMOUNT}};拒绝原因：{{item.REJECTRMK}}; 变化详情：{{item.BHREMARK}}; 上传时间：{{item.SUNTIME}};
 							</li>
 						</ul>
@@ -75,7 +75,7 @@
 			<view class="tolltwo">
 				<view class="uni-list" v-show="!datasFrame">
 					<checkbox-group @change="checkboxChange">
-						<label class="uni-list-cell" v-for="item in checkboxitems" :key="item.value">
+						<label class="uni-list-cell tolltwoItem" v-for="item in checkboxitems" :key="item.value">
 							<view>
 								<checkbox :value="item.value" :checked="item.checked" />
 							</view>
@@ -113,30 +113,34 @@
 					radioitems: [
 						{
 							value: 'imgMap',
-							name: '影像图',
-							checked: 'true'
+							name: '影像图',					
 						},
 						{
 							value: 'skyMap',
-							name: '电子地图'							
+							name: '电子地图'	,
+							checked: 'true'
 						},
 					],
 					checkboxitems: [
 						{
-							value: 'poi',
+							value: 'fabh',
 							name: '发现变化',
 							checked: 'true'
 						},
-						// {
-						// 	value: 'house',
-						// 	name: '发现变化2'							
-						// },
-						// {
-						// 	value: 'road',
-						// 	name: '发现变化3'							
-						// },
+						{
+							value: 'taskPoi',
+							name: '任务点'							
+						},
+						{
+							value: 'taskLine',
+							name: '任务线'							
+						},
+						{
+							value: 'taskPolg',
+							name: '任务面'							
+						},
 					],
-					current: 0,
+					current:1,
 					longitudeData:0,
 					latitudeData:0,
 					resconfig:null,
@@ -471,14 +475,14 @@
 						map.add(marklayer);//添加标注
 						// featruesLayer
 						const layerfeaturePoi = new FeatureLayer({
-						  url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
+						  url:"http://192.168.1.107:6080/arcgis/rest/services/FaXianBianHua/FaXianBianHuaWX2000/FeatureServer/0",
 						  // visible:false,
 						  outFields: ["*"],
 						  popupTemplate: _this.template,
 						});
 						// layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除
 						layerfeaturePoi.renderer=this.unirender;
-						map.add(layerfeaturePoi);
+						map.add(layerfeaturePoi);//发现变化图层
 						// const layerfeatureHouse = new FeatureLayer({
 						//    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
 						//    visible:false
@@ -487,14 +491,42 @@
 						//    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
 						//    visible:false
 						// });
-						// map.addMany([layerfeaturePoi,layerfeatureHouse,layerfeatureRoad]);						
+						// map.addMany([layerfeaturePoi,layerfeatureHouse,layerfeatureRoad]);
+						const layertaskPoi = new FeatureLayer({
+						   url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/0",
+						   visible:false
+						});
+						// layerfeaturePoi.definitionExpression = `AUDITRES IS NOT null`;//显示状态不是空的
+						// layerfeaturePoi.renderer = {//配色所有
+						//   type: "simple",  // autocasts as new SimpleRenderer()
+						//   symbol: {
+						//     type: "simple-fill", // autocasts as SimpleFillSymbol
+						//     color: [226, 119, 40,0.5],
+						//     style: "solid",
+						//     outline: {  // autocasts as new SimpleLineSymbol()
+						//       width: 0.5,
+						//       color: "white"
+						//     }
+						//   }
+						// };
+						const layertaskLine = new FeatureLayer({
+							url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/1",
+							visible:false
+						});
+						const layertaskPolg = new FeatureLayer({
+							url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/2",
+							// outFields: ["*"],
+							// popupTemplate: _this.template,
+							visible:false
+						});
+						map.addMany([layertaskPoi,layertaskLine,layertaskPolg]);
 						this.view.when(()=>{
 							setTimeout(()=>{
 								// document.querySelector('.esri-ui').style.width="70%";
 								let esriUI=document.querySelector('.esri-ui').offsetHeight;
 								let esriPopup=document.querySelector('.esri-popup');
-								esriPopup.style.height='245px';
-								esriPopup.style.marginTop=(esriUI - 245)+'px';
+								esriPopup.style.height='265px';
+								esriPopup.style.marginTop=(esriUI - 265)+'px';
 								esriPopup.onclick=function(event){
 									let classArr=event.target.classList;
 									if(classArr.length>1){
@@ -667,7 +699,7 @@
 				helpControl(){//弹出帮助信息
 					uni.showModal({	
 						title: '帮助信息',					
-					    content:`1.使用流程：授权登录注册授权。\n2.注意事项：外网连接外网连接外。\n3.奖金支付：累计积分兑换奖金累计积分兑换奖金。\n4.奖金提现：提现到微信零钱提现到微信零钱提现到微信零钱。
+					    content:`1.使用流程：授权登录注册授权。\n2.注意事项：网络畅通。\n3.奖金支付：领取任务，按时完成，获取奖金。\n4.奖金提现：提现到微信零钱。
 								`,
 						showCancel: false,						
 						confirmText: '关闭'
@@ -721,7 +753,7 @@
 					});
 					// 任务消息
 					request2({
-						url:'/api/bhfx/getbhfx',
+						url:'/api/lqrw/GetOwnRws',
 						header: {'Authorization':uni.getStorageSync('token')},
 						data: {
 							type:"dcl",							
@@ -733,7 +765,7 @@
 						}
 					});
 					request2({
-						url:'/api/bhfx/getbhfx',
+						url:'/api/lqrw/GetOwnRws',
 						header: {'Authorization':uni.getStorageSync('token')},
 						data: {
 							type:"ycl",							
@@ -757,41 +789,55 @@
 				processedEvent(val){
 					this.graphicLocate(val);
 				},
-				graphicLocate(val){
-					// let selectSymbol={
-					// 	type:'simple-fill',
-					// 	color:[30,159,255,0],
-					// 	style:'solid',
-					// 	outline:{color:[232,23,25,1],width:10}
-					// }
+				graphicLocate(val,type){
+					let layerIndex=type=="任务"?5:(type=="点"?6:(type=="线")?7:8);
 					esriLoader.loadModules(["esri/tasks/support/Query","esri/Graphic"])
 					.then(([Query,Graphic])=>{
 						const query=new Query();
 						query.where= "OBJECTID = '"+val +"'";
-						_this.map.layers.items[5].queryFeatures(query).then(function(results){
-							// results.features[0].geometry.extent.expand(1)
-							_this.view.goTo({center:[results.features[0].geometry.extent.center.x,results.features[0].geometry.extent.center.y],zoom:17}).then(function () {					
-								// _this.view.popup.open({
-								// 	features: [results.features[0]],
-								// 	location: results.features[0].geometry.centroid
-								// })
-								_this.view.graphics.removeAll();
-								let addGraphic = new Graphic({
-									geometry: results.features[0].geometry,
-									symbol: {
-									  type: "simple-fill", // autocasts as SimpleFillSymbol
-									  color: [226, 119, 40,0.1],
-									  style: "solid",
-									  outline: {  // autocasts as SimpleLineSymbol
-										color: "red",
-										width: 1
-									  }
-									},
-									attributes: _this.formdata
-								});	
-								_this.view.graphics.add(addGraphic);
-								_this.myinf=false;
-							});
+						query.returnGeometry = true;
+						_this.map.layers.items[layerIndex].queryFeatures(query).then(function(results){
+							if(type!='点'){
+								_this.view.goTo({
+									center:[results.features[0].geometry.extent.center.x,results.features[0].geometry.extent.center.y],
+									zoom:16,
+									},{duration: 1000})
+								.then(function () {
+									_this.view.graphics.removeAll();
+									let addGraphic = new Graphic({
+										geometry: results.features[0].geometry,
+										symbol: {
+										  type: "simple-fill", // autocasts as SimpleFillSymbol
+										  color: [226, 119, 40,0.1],
+										  style: "solid",
+										  outline: {  // autocasts as SimpleLineSymbol
+											color: "red",
+											width: 1
+										  }
+										},
+										attributes: _this.formdata
+									});	
+									_this.view.graphics.add(addGraphic);
+									_this.myinf=false;
+								});
+							}else{
+								_this.view.goTo({
+									center:[results.features[0].geometry.longitude,results.features[0].geometry.latitude],
+									zoom:16,
+									},{duration: 1000})
+								.then(function () {
+									_this.view.graphics.removeAll();
+									let addGraphic = new Graphic({
+										geometry:results.features[0].geometry,//放new点不行放geometry
+										symbol: {
+										  type: "simple-marker",
+										  color: [226, 119, 40]
+										}
+									});	
+									_this.view.graphics.add(addGraphic);
+									_this.myinf=false;
+								});
+							}
 						})
 					})
 				},

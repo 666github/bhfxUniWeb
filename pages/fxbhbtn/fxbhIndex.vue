@@ -591,7 +591,7 @@
 						  // url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/0',
 						  // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
 						  // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
-						  url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
+						  url:"http://192.168.1.107:6080/arcgis/rest/services/FaXianBianHua/FaXianBianHuaWX2000/FeatureServer/0",
 						  // visible:false,
 						  outFields: ["*"],
 						  popupTemplate: _this.template,

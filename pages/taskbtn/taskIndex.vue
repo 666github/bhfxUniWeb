@@ -51,10 +51,10 @@
 						</view>
 						<view class="taskItemZ">
 							<view class="taskItemChild">
-								<view class="itemNameZ">{{item.ZRW.QU}}{{item.ZRW.XZ}}</view>
-								<view>{{item.ZRW.NYREMARK}}</view>
+								<view class="itemNameZ itemNameZL">{{item.ZRW.QU}}{{item.ZRW.XZ}}</view>
+								<view class="itemNameZL">{{item.ZRW.NYREMARK}}</view>
 							</view>
-							<view class="taskItemChild">
+							<view class="taskItemChild" style="flex-shrink: 0;">
 								<view class="itemMoney">{{item.ZRW.DISTANCE}}m {{item.ZRW.AMOUNT || 0}}元</view>
 								<view>
 									<button class="getTask" type="primary" size="mini" @click.stop="getTaskToDo(item.ZRW.GUID,item.ZRW.TYPE)">领取任务</button>
@@ -66,7 +66,7 @@
 				<view class="doTaskDiv" v-show="doTaskShow">
 					<!-- <view class="getTaskTitle">已领取</view> -->
 					<view  class="taskItem2 haveGotTask" v-for="(item,index) in dotaskLists" :key="item.index" @click="doTasksee(item.GUID,item.TYPE)">
-						<view class="taskItemChild2" >
+						<view class="taskItemChild2">
 							<!-- <view class="itemName">{{item.NAME}} 时间:{{resetTime30(item.LQTIME)}}</view> -->
 							<view class="itemName naviTo" style="margin: 5px 0;">{{item.NAME}} 时间:{{item.TIME}}</view>
 							<view class="">{{item.NYREMARK}}</view>
@@ -134,7 +134,7 @@
 						},
 						{
 							value: 'skyMap',
-							name: '电子图',
+							name: '电子地图',
 							checked:'true'
 						},
 					],
@@ -155,7 +155,6 @@
 							checked:"true"
 						},
 					],
-					current: 0,
 					longitudeData:0,
 					latitudeData:0,
 					resconfig:null,
@@ -393,9 +392,6 @@
 						map.add(marklayer);//添加标注
 						// featruesLayer
 						const layerfeaturePoi = new FeatureLayer({
-						  // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/0",
-						  // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/0",
-						   // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
 						   url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/0",
 						   outFields: ["*"],
 						  // popupTemplate: this.template,
@@ -414,14 +410,10 @@
 						//   }
 						// };
 						const layerfeatureHouse = new FeatureLayer({
-						   // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/1",
-						   // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/1"
 						    url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/1",
 							// visible:false
 						});
 						const layerfeatureRoad = new FeatureLayer({
-						   // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/2",
-						   // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/WXShangBao/FeatureServer/2"
 						    url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/2",
 							// visible:false
 						});
@@ -482,18 +474,12 @@
 				datasframeControl(){
 					this.datasFrame=!this.datasFrame
 				},
-				localtionControl(){					
-					VxgetLocation(_this);									
+				localtionControl(){//定位当前					
+					VxgetLocation(_this);
+					setTimeout(()=>{
+						this.taskClassFirst();//定位当前位置，更新任务列表
+					},300);
 				},
-				// helpControl(){//弹出帮助信息
-				// 	uni.showModal({	
-				// 		title: '纠错信息',					
-				// 	    content:`这是纠错按钮`,
-				// 		showCancel: false,						
-				// 		confirmText: '关闭'
-				// 	})
-						
-				// },
 				lqrw(){//tab
 					this.doTaskShow=false;					
 				},
@@ -501,21 +487,16 @@
 					this.doTaskShow=true;
 				},
 				tasksInit(){
-					//获取大任务类
+					//领取任务列表
 					this.taskClassFirst();
 					//做任务列表
 					this.dotaskFirst();				
 				},
-				taskClassFirst(){//大任务列表
-					// request2({
-					// 	url:'/api/lqrw/getRwList',
-					// 	header: {'Authorization':uni.getStorageSync('token')},
-					// }).then((res)=>{									
-					// 	if(res.data.Status=="success"){
-					// 		_this.tasksClass=res.data.Data;
-					// 	}
-					// });
-					console.log('taskinit',this.latitudeData);
+				taskClassFirst(){
+					uni.showLoading({  
+					    title: '加载中'  
+					});
+					console.log(1,_this.longitudeData,_this.latitudeData)
 					request2({
 						url:'/api/lqrw/GetAroundRws',
 						header: {'Authorization':uni.getStorageSync('token')},
@@ -524,6 +505,7 @@
 					}).then((res)=>{							
 						if(res.data.Status=="success"){
 							_this.tasksClass=res.data.Data;
+							uni.hideLoading();
 						}
 					});
 				},
@@ -553,40 +535,16 @@
 							},1000);
 						}
 					});
-				},				
-				collapseChange(e){
-					if(e.length>this.tasksIndex.length){
-						let thisIndex=[...e].filter(x=>[..._this.tasksIndex].every(y=>y!==x));//差集
-						this.classId=this.tasksClass[thisIndex[0]].ID;//查看大类的id
-						this.getTaskPoiLinePoly(_this.classId);
-					}					
-					this.tasksIndex=e;
-				},
-				getTaskPoiLinePoly(id){
-					request2({
-						url:'/api/lqrw/getItemsById',//获取任务列表
-						header: {'Authorization':uni.getStorageSync('token')},
-						data: {
-							id:id,
-							// type
-						},
-					}).then((res)=>{									
-						if(res.data.Status=="success"){
-							_this.tasksById=res.data.Data;//点数据集合
-						}
-					})
-					// this.plpBoolean=index;
-					// this.taskItemtype=type;
 				},
 				getTaskToDo(id,type){			
 					request2({
-						url:'/api/lqrw/lq',//领取每个小任务
+						url:'/api/lqrw/lq',
 						header: {'Authorization':uni.getStorageSync('token')},
 						data: {
 							id:id,
 							type
 						},
-					}).then((res)=>{debugger									
+					}).then((res)=>{							
 						if(res.data.Status=="success"){
 							_this.taskClassFirst();//更新领取列表
 							_this.dotaskFirst();//更新做任务列表
@@ -599,7 +557,7 @@
 					this.formdata.ID=id;
 					this.getTime();
 				},
-				doTaskContent(templateid,id){debugger
+				doTaskContent(templateid,id){
 					// this.contentType=type;
 					request2({
 						url:'/api/lqrw/GetTemplateById',//领取每个小任务
@@ -612,7 +570,7 @@
 						if(res.data.Status=="success"){
 							let taskarr=res.data.Data
 							taskarr.shift();
-							_this.taskContentObj=taskarr;debugger
+							_this.taskContentObj=taskarr;
 							this.doTaskShow=false;
 							this.showPageOne=false;
 							this.formdataID=id;
@@ -702,22 +660,6 @@
 					    }
 					});
 				},
-				// bhyesOrno(e){
-				// 	this.formdata.bhyesIsno=e.detail.value;
-				// },
-				// bhtypeVal(e){
-				// 	this.formdata.BHTYPE=e.detail.value;
-				// },
-				// selectOne(){
-				// 	this.formdata.BHBEFORE=document.getElementById('selectOne').value;
-				// },
-				// selectTwo(){
-				// 	this.formdata.BHAFTER=document.getElementById('selectTwo').value;
-				// },
-				// getTextcontent(e){
-				// 	let	values = e.detail.value;
-				// 	this.formdata.BHREMARK=values;
-				// },
 				nearControl(){
 					// if(!_this.doTaskShow){
 						this.latitudeData=this.view.center.latitude;
@@ -761,13 +703,18 @@
 							id:this.formdataID,
 							remark:JSON.stringify(this.rdVal),//对象
 						}
-					}).then((res)=>{debugger									
+					}).then((res)=>{									
 						if(res.data.Status=="success"){
-							this.doTaskShow=true;
+							uni.showModal({
+								title: '提交信息',
+								content:`提交成功`,
+								showCancel: false,						
+								confirmText: '关闭'
+							});
+							// this.doTaskShow=true;
 							this.showPageOne=true;
 							this.dotaskFirst();
-							// 提交后清空页面
-							// this.formdata.BHREMARK="";
+							// 提交后清空页面		
 							this.formdata.imgfiles=[
 								{
 									imagesrc:"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAJMAAACtCAYAAAC0lU3IAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAKWSURBVHhe7dY7S51BFEDR/P8/JYilYGNlI1j5wF5svmC4CSlyOQeyyUPWggMzU02xYebLARExkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRETGTGRERMZMZERExkxkRHTwvPz8/H6+nracY6YBvf398fFxcW3+VhznpgGNzc3P2L6WHOemAZi2hPTQEx7YhqIaU9MAzHtiWkgpj0xDcS0J6aBmPbENBDTnpgGYtoT00BMe2IaiGlPTAMx7YlpIKY9MQ3EtPdpY3p6ejpub2+/BfC783NMvzt3d3fHy8vL6Zafy6eN6SOk7xH8a3N9fX265ecipr8wYvrPeOb+PB/wwUcAP8fEeWIaiGlPTAMx7YlpIKY9MQ3EtCemgZj2xDQQ056YBmLaE9NATHtiGohpT0wDMe2JaSCmPTENxLQnpoGY9sQ0ENOemAZi2hPTQEx7YhqIaU9Mg8fHx+Py8vK4uro6Hh4eTqf8ipgW3t7ejvf399OOc8RERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTGTEREZMZMRERkxkxERGTESO4yuySSL97z4uOgAAAABJRU5ErkJggg==",
@@ -782,25 +729,25 @@
 									id:2,
 								}
 							];
+						}else{
+							uni.showModal({
+								title: '提交信息',
+								content:`提交失败`,
+								showCancel: false,						
+								confirmText: '关闭'
+							});
 						}
 					});
 				},
 				submitCancel(){
 					this.showPageOne=true;
-					this.showPageThree=false;
-					this.showPageBars=true;
+					this.doTaskShow=true;
 					this.formdata.imgfiles=this.formdataImgfiles;
 					this.taskContentObj=[];
-					// this.formdata=JSON.parse(JSON.stringify(this.formdata2));//清除内容模板
-					// this.map.layers.items[5].popupTemplate=_this.template2;
 				},
 				
 			},
 			components:{
-				// taskRoad,
-				// radioContent,
-				// inputContent,
-				// selectContent
 				mpRadio,
 				mpInput,
 				mpSelect,

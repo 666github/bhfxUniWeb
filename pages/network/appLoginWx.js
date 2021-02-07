@@ -109,7 +109,7 @@ export function VxgetLocation(_this){
 			updatelayer.applyEdits(updateEdit)
 			.then(function(editsResult){
 				console.log(editsResult,_this.latitudeData,_this.longitudeData);
-			})								
+			});								
 		 },
 		fail:function(err){
 		  	console.log(JSON.stringify(err))
