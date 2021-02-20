@@ -1,7 +1,7 @@
 <template>
 	<view style="width: 100%;height: 100%;">
 		<view class="container" v-show="showPageOne">
-			<view class="mymap" id="mymap">			
+			<view class="mymap" id="mymap" @touchend="handletouchmove">			
 			</view>
 			<view class="rightToll">
 				<view class="tollone">
@@ -269,6 +269,7 @@
 							},								
 						]
 					},
+					guidstr:'11'
 				}
 			},
 			beforeDestroy(){
@@ -288,7 +289,17 @@
 						    // var accuracy = res.accuracy; // 位置精度
 							_this.longitudeData=Number(longitude);
 							_this.latitudeData=Number(latitude );
-							_this.creatMapview();//创建地图
+							request2({
+								url:'/api/lqrw/GetOwnNoFinishedRw',
+								header: {'Authorization':uni.getStorageSync('token')}
+							}).then((res)=>{							
+								if(res.data.Status=="success"){
+									// _this.guidstr=res.data.Data
+									_this.guidstr=res.data.Data.map(item=>`'${item}'`).join(',');
+									_this.creatMapview();//创建地图
+								}
+							});
+							
 						  },
 						  fail:function(err){
 						  	console.log(JSON.stringify(err))
@@ -306,13 +317,13 @@
 			// 		this.rdVal[this.taskContentObj.length+1]=val;
 			// 	}
 			// },
-			methods: {
-				creatMapview(){
+			methods: {				
+				creatMapview(){				
 					esriLoader.loadModules(['esri/Map','esri/views/MapView','esri/layers/FeatureLayer',"esri/layers/TileLayer","esri/layers/WebTileLayer",
-					"esri/layers/MapImageLayer","esri/Graphic"],{
+					"esri/layers/MapImageLayer","esri/Graphic","esri/tasks/support/Query"],{
 						css:true
 					})
-					.then(([Map,MapView,FeatureLayer,TileLayer,WebTileLayer,MapImageLayer,Graphic])=>{
+					.then(([Map,MapView,FeatureLayer,TileLayer,WebTileLayer,MapImageLayer,Graphic,Query])=>{
 						let map = new Map({
 							// basemap:'streets',
 						});
@@ -394,9 +405,10 @@
 						const layerfeaturePoi = new FeatureLayer({
 						   url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/0",
 						   outFields: ["*"],
+						   definitionExpression:`GUID IN (${_this.guidstr}) OR STATUS = '1'`,
 						  // popupTemplate: this.template,
 						});
-						// layerfeaturePoi.definitionExpression = `AUDITRES IS NOT null`;//显示状态不是空的
+						// layerfeaturePoi.definitionExpression = `STATUS ='1' OR GUID IN (${this.guidArr})`;debugger
 						// layerfeaturePoi.renderer = {//配色所有
 						//   type: "simple",  // autocasts as new SimpleRenderer()
 						//   symbol: {
@@ -409,32 +421,38 @@
 						//     }
 						//   }
 						// };
-						const layerfeatureHouse = new FeatureLayer({
+						console.log(_this.guidstr);
+						const layerfeatureLine = new FeatureLayer({
 						    url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/1",
-							// visible:false
+							outFields: ["*"],
+							definitionExpression:`GUID IN (${_this.guidstr}) OR STATUS = '1'`,
+							// visible:false,
 						});
-						const layerfeatureRoad = new FeatureLayer({
+						// layerfeatureLine.definitionExpression = `GUID IN (${})`;debugger//AND RKTIME = 1612779194000 
+						const layerfeaturePolygon = new FeatureLayer({
 						    url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/2",
+							outFields: ["*"],
+							definitionExpression:`GUID IN (${_this.guidstr}) OR STATUS = '1'`,
 							// visible:false
 						});
-						layerfeaturePoi.renderer=this.unirender;
-						map.addMany([layerfeaturePoi,layerfeatureHouse,layerfeatureRoad]);
-						// this.view.on('click',function(event){
-						// 	if(!_this.doTaskShow){
-						// 		_this.latitudeData=event.mapPoint.latitude;
-						// 		_this.longitudeData=event.mapPoint.longitude;
-						// 		let updatelayer=_this.map.layers.items[4];//标记图层
-						// 		_this.view.center=[_this.longitudeData,_this.latitudeData];
-						// 	}
-						// })
+						// layerfeaturePoi.renderer=this.unirender;
+						map.addMany([layerfeaturePoi,layerfeatureLine,layerfeaturePolygon]);
 						this.view.on('click',(event)=>{
 							this.view.hitTest(event).then(response=>{
-								if(response.results.length>0){debugger
-									let graphic=response.results[0].graphic;
-									
+								if(response.results.length>0){
+									let graphic=response.results[0].graphic;debugger
 								}									
 							})
 						});
+						this.view.on(['drag'], function(event){//'pointer-up', 'pointer-move'
+							_this.nearControl();														 				
+						})
+						this.view.watch(['scale'],function(newValue, oldValue, propertyName){//,'center'	
+							_this.nearControl();
+						});
+						// this.view.on('resize',function(event){//浮层随着视窗大小变化事件移动
+						// 	console.log('resize');							 				
+						// });
 					})
 				},
 				rdcontent(val,index){
@@ -591,7 +609,7 @@
 								_this.view.goTo({
 									target:results.features[0].geometry,
 									center:[results.features[0].geometry.extent.center.longitude,results.features[0].geometry.extent.center.latitude],
-									zoom:16,
+									zoom:14,
 									},{duration: 1000})
 								.then(function () {
 									_this.view.graphics.removeAll();
@@ -612,7 +630,7 @@
 							}else{							
 								_this.view.goTo({
 									center:[results.features[0].geometry.longitude,results.features[0].geometry.latitude],
-									zoom:16,
+									zoom:14,
 									},{duration: 1000})
 								.then(function () {
 									_this.view.graphics.removeAll();
@@ -660,6 +678,9 @@
 					    }
 					});
 				},
+				handletouchmove(event){
+					// this.nearControl();
+				},
 				nearControl(){
 					// if(!_this.doTaskShow){
 						this.latitudeData=this.view.center.latitude;
@@ -673,23 +694,26 @@
 										latitude: _this.latitudeData, // 纬度
 									},
 									"attributes":{
-									   "ObjectID": updatelayer.source.items[0].attributes.ObjectID,
+									   // "ObjectID": updatelayer.source.items[0].attributes.ObjectID,
+									   "ObjectID":1,
 									}
 								}]
 							};				
 						updatelayer.applyEdits(updateEdit)
 						.then(function(editsResult){
+							console.log(_this.longitudeData);
+							// _this.map.layers.items[4].refresh();
 							//传坐标发送请求获取附近任务
-							request2({
-								url:'/api/lqrw/GetAroundRws',
-								header: {'Authorization':uni.getStorageSync('token')},
-								// data:{lon:_this.longitudeData,lat:_this.latitudeData}
-								data:{lon:116.352036,lat:39.900413}
-							}).then((res)=>{debugger								
-								if(res.data.Status=="success"){
-									_this.tasksClass=res.data.Data;
-								}
-							});
+							// request2({
+							// 	url:'/api/lqrw/GetAroundRws',
+							// 	header: {'Authorization':uni.getStorageSync('token')},
+							// 	// data:{lon:_this.longitudeData,lat:_this.latitudeData}
+							// 	data:{lon:116.352036,lat:39.900413}
+							// }).then((res)=>{debugger								
+							// 	if(res.data.Status=="success"){
+							// 		_this.tasksClass=res.data.Data;
+							// 	}
+							// });
 						})
 					// }
 				},

@@ -470,11 +470,11 @@
 			filters:{
 				getTime2(timestr){
 					let yy = new Date(timestr).getFullYear();
-					let mm = new Date(timestr).getMonth()+1;
-					let dd = new Date(timestr).getDate();
-					let hh = new Date(timestr).getHours();
-					let mf = new Date(timestr).getMinutes()<10 ? '0'+new Date(timestr).getMinutes() : new Date(timestr).getMinutes();
-					let ss = new Date(timestr).getSeconds()<10 ? '0'+new Date(timestr).getSeconds() : new Date(timestr).getSeconds();
+					let mm = new Date().getMonth()+1<10 ? '0'+(new Date().getMonth()+1) : (new Date().getMonth()+1);
+					let dd = new Date().getDate()<10 ? '0'+new Date().getDate() : new Date().getDate();
+					let hh = new Date().getHours()<10 ? '0'+new Date().getHours() : new Date().getHours();
+					let mf = new Date().getMinutes()<10 ? '0'+new Date().getMinutes() : new Date().getMinutes();
+					let ss = new Date().getSeconds()<10 ? '0'+new Date().getSeconds() : new Date().getSeconds();
 					return  yy+'/'+mm+'/'+dd+' '+hh+':'+mf+':'+ss;
 				},
 			},
@@ -595,24 +595,10 @@
 						  // visible:false,
 						  outFields: ["*"],
 						  popupTemplate: _this.template,
+						  definitionExpression:`ID > ${_this.getTimediffer()} `,//剔除半年
 						});
 						layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除
-						layerfeaturePoi.renderer=this.unirender;
-						// const layerfeatureHouse = new FeatureLayer({
-						//   // url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/1',
-						//    // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
-						//    // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
-						//    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
-						//    visible:false
-						// });
-						// const layerfeatureRoad = new FeatureLayer({
-						//   // url: 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer/2',
-						//    // url:"http://192.168.1.101:6080/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
-						//    // url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX/FeatureServer/0",
-						//    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
-						//    visible:false
-						// });
-					 //    map.addMany([layerfeaturePoi,layerfeatureHouse,layerfeatureRoad]);
+						// layerfeaturePoi.renderer=this.unirender;
 						map.add(layerfeaturePoi);
 						_this.view.on('click',function(event){
 							let screenPoint={
@@ -621,7 +607,7 @@
 							}
 							if(_this.showPageBars){
 								_this.view.hitTest(screenPoint).then(function(response){
-									if(response.results.length>0){								
+									if(response.results.length>0){					
 										let id=response.results[0].graphic.attributes.ID;
 										let checkState=response.results[0].graphic.attributes.AUDITRES;//审核状态
 										// _this.formdata.ID=id;
@@ -898,20 +884,21 @@
 					_this.showPageBars=false;
 				},
 				modifyProp(){//修改
-					// let esriPopupId=document.querySelector('.esri-feature-fields__field-data').innerText;
-					// let objectIdstr=Number(esriPopupId.substr(1));
+					/*
+					let esriPopupId=document.querySelector('.esri-feature-fields__field-data').innerText;
+					let objectIdstr=Number(esriPopupId.substr(1));
+					this.map.layers.items[5].applyEdits({
+					    deleteFeatures:[{objectId:objectIdstr}]
+					 });
+					*/
 					this.modifyErrContent();
-					this.getTime();
-					// this.map.layers.items[5].applyEdits({
-					//     deleteFeatures:[{objectId:objectIdstr}]
-					//  });
+					this.getTime();					
 					this.xiugai=true;
 				},					
 				helpControlerr(){//纠错
 					this.modifyErrContent();
 				    // this.current=0;
 					this.xiugai=false;
-					console.log(0,this.formdata);
 				},
 				newaddBtn(){
 					this.formdata=JSON.parse(JSON.stringify(this.formdata2));
@@ -957,13 +944,22 @@
 				getTime(){
 					  _this.formdata.SUNTIME = new Date().getTime();
 					  let yy = new Date().getFullYear();
-					  let mm = new Date().getMonth()+1;
-					  let dd = new Date().getDate();
-					  let hh = new Date().getHours();
+					  let mm = new Date().getMonth()+1<10 ? '0'+(new Date().getMonth()+1) : (new Date().getMonth()+1);
+					  let dd = new Date().getDate()<10 ? '0'+new Date().getDate() : new Date().getDate();
+					  let hh = new Date().getHours()<10 ? '0'+new Date().getHours() : new Date().getHours();
 					  let mf = new Date().getMinutes()<10 ? '0'+new Date().getMinutes() : new Date().getMinutes();
 					  let ss = new Date().getSeconds()<10 ? '0'+new Date().getSeconds() : new Date().getSeconds();
 					  // _this.formdata.SUNTIME = yy+'/'+mm+'/'+dd+' '+hh+':'+mf+':'+ss;//时间				  
 					  return yy.toString()+mm+dd+hh+mf+ss;
+				},
+				getTimediffer(){//半年差
+					let yy = new Date().getFullYear();
+					let mm = new Date().getMonth()+1<10 ? '0'+(new Date().getMonth()+1) : (new Date().getMonth()+1);
+					let dd = new Date().getDate()<10 ? '0'+new Date().getDate() : new Date().getDate();
+					let hh = new Date().getHours()<10 ? '0'+new Date().getHours() : new Date().getHours();
+					let mf = new Date().getMinutes()<10 ? '0'+new Date().getMinutes() : new Date().getMinutes();
+					let ss = new Date().getSeconds()<10 ? '0'+new Date().getSeconds() : new Date().getSeconds();
+					return  (yy+mm+dd+hh+mf+ss)-600000000;
 				},
 				cameraChild(index){//照片
 					uni.chooseImage({
@@ -1029,7 +1025,7 @@
 							  color: [226, 119, 40,0.1],
 							  style: "solid",
 							  outline: {  // autocasts as SimpleLineSymbol
-								color: "red",
+								color: "black",
 								width: 1
 							  }
 							},

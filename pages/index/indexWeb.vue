@@ -24,7 +24,8 @@
 					<view class="processedInf">
 						<ul class='lists'>
 							<li v-for="item in processedInf" :key="item.OBJECTID" @click="graphicLocate(item.OBJECTID,'任务')">
-								变化类型：{{item.BHTYPE}}; 变换前：{{item.BHBEFORE}}; 变化后：{{item.BHAFTER}}; 单价：{{item.AMOUNT}};拒绝原因：{{item.REJECTRMK}}; 变化详情：{{item.BHREMARK}}; 上传时间：{{item.SUNTIME}};
+								变化类型：{{item.BHTYPE}}; 变换前：{{item.BHBEFORE}}; 变化后：{{item.BHAFTER}}; 单价：{{item.AMOUNT}};拒绝原因：{{item.REJECTRMK}}; 
+								变化详情：{{item.BHREMARK}}; 上传时间：{{item.SUNTIME}};
 							</li>
 						</ul>
 					</view>
@@ -35,7 +36,7 @@
 			        <view class="pendingInf">
 						<ul class='lists'>
 							<li v-for="item in pendingInf2" :key="item.OBJECTID" @click="graphicLocate(item.OBJECTID,item.TYPE)">
-								变化类型：{{item.BHTYPE}}; 变换前：{{item.BHBEFORE}}; 变化后：{{item.BHAFTER}}; 单价：{{item.AMOUNT}}; 变化详情：{{item.BHREMARK}}; 上传时间：{{item.SUNTIME}};
+								任务名称：{{item.NAME}}; 备注：{{item.NYREMARK}}; 单价：{{item.AMOUNT}}; 领取时间：{{item.LQTIME}}; 上传时间：{{item.SUBTIME}};
 							</li>
 						</ul>
 			        </view>
@@ -44,7 +45,8 @@
 					<view class="processedInf">
 						<ul class='lists'>
 							<li v-for="item in processedInf2" :key="item.OBJECTID" @click="graphicLocate(item.OBJECTID,item.TYPE)">
-								变化类型：{{item.BHTYPE}}; 变换前：{{item.BHBEFORE}}; 变化后：{{item.BHAFTER}}; 单价：{{item.AMOUNT}};拒绝原因：{{item.REJECTRMK}}; 变化详情：{{item.BHREMARK}}; 上传时间：{{item.SUNTIME}};
+								任务名称：{{item.NAME}}; 通过/拒绝：{{item.AUDITREMARK}}; 备注：{{item.NYREMARK}}; 单价：{{item.AMOUNT}};
+								审核时间：{{item.AUDITTIME}}; 上传时间：{{item.SUBTIME}};
 							</li>
 						</ul>
 					</view>
@@ -479,6 +481,7 @@
 						  // visible:false,
 						  outFields: ["*"],
 						  popupTemplate: _this.template,
+						  definitionExpression:`ID > ${_this.getTimediffer()} `,
 						});
 						// layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除
 						layerfeaturePoi.renderer=this.unirender;
@@ -496,8 +499,8 @@
 						   url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/0",
 						   visible:false
 						});
-						// layerfeaturePoi.definitionExpression = `AUDITRES IS NOT null`;//显示状态不是空的
-						// layerfeaturePoi.renderer = {//配色所有
+						// layertaskPoi.definitionExpression = `STATUS ='1'`;//显示状态不是空的
+						// llayertaskPoi.renderer = {//配色所有
 						//   type: "simple",  // autocasts as new SimpleRenderer()
 						//   symbol: {
 						//     type: "simple-fill", // autocasts as SimpleFillSymbol
@@ -542,7 +545,7 @@
 						});
 						_this.view.on('click',function(event){
 							_this.view.hitTest(event).then(function(response){
-								if(response.results.length>0){									
+								if(response.results.length>0){	debugger					
 									let id=response.results.length==1?response.results[0].graphic.attributes.ID:response.results[1].graphic.attributes.ID;									
 									//请求后台获取图片
 									request2({
@@ -789,6 +792,15 @@
 				processedEvent(val){
 					this.graphicLocate(val);
 				},
+				getTimediffer(){//半年差
+					let yy = new Date().getFullYear();
+					let mm = new Date().getMonth()+1<10 ? '0'+(new Date().getMonth()+1) : (new Date().getMonth()+1);
+					let dd = new Date().getDate()<10 ? '0'+new Date().getDate() : new Date().getDate();
+					let hh = new Date().getHours()<10 ? '0'+new Date().getHours() : new Date().getHours();
+					let mf = new Date().getMinutes()<10 ? '0'+new Date().getMinutes() : new Date().getMinutes();
+					let ss = new Date().getSeconds()<10 ? '0'+new Date().getSeconds() : new Date().getSeconds();
+					return  (yy+mm+dd+hh+mf+ss)-600000000;
+				},
 				graphicLocate(val,type){
 					let layerIndex=type=="任务"?5:(type=="点"?6:(type=="线")?7:8);
 					esriLoader.loadModules(["esri/tasks/support/Query","esri/Graphic"])
@@ -801,7 +813,7 @@
 								_this.view.goTo({
 									center:[results.features[0].geometry.extent.center.x,results.features[0].geometry.extent.center.y],
 									zoom:16,
-									},{duration: 1000})
+									},{duration: 300})
 								.then(function () {
 									_this.view.graphics.removeAll();
 									let addGraphic = new Graphic({
@@ -824,7 +836,7 @@
 								_this.view.goTo({
 									center:[results.features[0].geometry.longitude,results.features[0].geometry.latitude],
 									zoom:16,
-									},{duration: 1000})
+									})
 								.then(function () {
 									_this.view.graphics.removeAll();
 									let addGraphic = new Graphic({

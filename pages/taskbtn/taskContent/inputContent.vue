@@ -1,7 +1,7 @@
 <template>
 <view class="formDiv"  style="display: flex;justify-content: flex-start;" >
 	<b>{{consinfo.title}}:</b>
-	<input @input="radioChange" type='number' class="uni-input uniinput"  :placeholder="consinfo.placeholder" />
+	<input @input="radioChange" type='text' class="uni-input uniinput"  :placeholder="consinfo.placeholder" />
 </view>
 </template>
 
