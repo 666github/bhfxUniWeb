@@ -1,7 +1,9 @@
 <template>
 	<view style="width: 100%;height: 100%;">
 		<view class="container" v-show="showPageOne">
-			<view class="mymap" id="mymap" @touchend="handletouchmove">			
+			<image :src="imgSrc" id="dingweiImg" :class="{'dingweiImg':imgJump}" ></image>
+			<view class="mymap" id="mymap" @touchend="handletouchmove" @touchmove="handletouchmove2">
+				
 			</view>
 			<view class="rightToll">
 				<view class="tollone">
@@ -114,9 +116,11 @@
 	var _this;
 	import esriLoader from 'esri-loader';
 	import {appLoginWx,request,request2,VxgetLocation} from '@/pages/network/appLoginWx.js'
+	import dingwei from '@/static/定位.svg'
 	// import taskRoad from '@/pages/taskbtn/taskRoad.vue'
 	import mpRadio from '@/pages/taskbtn/taskContent/radioContent.vue'
 	import mpInput from '@/pages/taskbtn/taskContent/inputContent.vue'
+	import mpDatePicker from '@/pages/taskbtn/taskContent/dateContent.vue'
 	import mpSelect from '@/pages/taskbtn/taskContent/selectContent.vue'
 	import mpTextArea from '@/pages/taskbtn/taskContent/textareaContent.vue'
 		export default {
@@ -126,6 +130,8 @@
 					showLayer:true,
 					layersFrame:true,
 					datasFrame:true,
+					imgSrc:dingwei,
+					imgJump:false,
 					radioitems: [
 						{
 							value: 'imgMap',
@@ -169,12 +175,12 @@
 					imgUrl:"http://bhfxxcx.natapp1.cc",
 					imgfilesNew:[],
 					dotaskLists:[
-						{
-							dotaskName:"羊坊店路",
-							remainTime:"30:00",
-							details:"代理可发家大理石块姐夫老家当时离京弗",
-							dotaskMoney:"10"
-						},
+						// {
+						// 	dotaskName:"羊坊店路",
+						// 	remainTime:"30:00",
+						// 	details:"代理可发家大理石块姐夫老家当时离京弗",
+						// 	dotaskMoney:"10"
+						// },
 					],
 					doTaskShow:false,
 					// dotaskDis:false,
@@ -269,7 +275,7 @@
 							},								
 						]
 					},
-					guidstr:'11'
+					guidstr:''
 				}
 			},
 			beforeDestroy(){
@@ -294,7 +300,6 @@
 								header: {'Authorization':uni.getStorageSync('token')}
 							}).then((res)=>{							
 								if(res.data.Status=="success"){
-									// _this.guidstr=res.data.Data
 									_this.guidstr=res.data.Data.map(item=>`'${item}'`).join(',');
 									_this.creatMapview();//创建地图
 								}
@@ -399,13 +404,14 @@
 							source: graphics,
 							objectIdField: 'ObjectID',
 							renderer:this.renderer,
+							visible:false
 						});
 						map.add(marklayer);//添加标注
 						// featruesLayer
 						const layerfeaturePoi = new FeatureLayer({
 						   url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/0",
 						   outFields: ["*"],
-						   definitionExpression:`GUID IN (${_this.guidstr}) OR STATUS = '1'`,
+						   definitionExpression:`GUID IN (${_this.guidstr}) OR STATUS = '1'`,//待处理的和未领取的
 						  // popupTemplate: this.template,
 						});
 						// layerfeaturePoi.definitionExpression = `STATUS ='1' OR GUID IN (${this.guidArr})`;debugger
@@ -421,7 +427,6 @@
 						//     }
 						//   }
 						// };
-						console.log(_this.guidstr);
 						const layerfeatureLine = new FeatureLayer({
 						    url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/1",
 							outFields: ["*"],
@@ -440,24 +445,14 @@
 						this.view.on('click',(event)=>{
 							this.view.hitTest(event).then(response=>{
 								if(response.results.length>0){
-									let graphic=response.results[0].graphic;debugger
+									let graphic=response.results[0].graphic;
 								}									
 							})
 						});
-						this.view.on(['drag'], function(event){//'pointer-up', 'pointer-move'
-							_this.nearControl();														 				
-						})
-						this.view.watch(['scale'],function(newValue, oldValue, propertyName){//,'center'	
-							_this.nearControl();
-						});
-						// this.view.on('resize',function(event){//浮层随着视窗大小变化事件移动
-						// 	console.log('resize');							 				
-						// });
 					})
 				},
 				rdcontent(val,index){
 					this.rdVal[index]=val;
-					console.log(this.rdVal,val);
 				},
 				radioChange(evt) {
 					if(evt.target.value=="imgMap"){
@@ -536,14 +531,14 @@
 							_this.dotaskLists=res.data.Data;
 							let timerun=setInterval(()=>{//倒计时
 								_this.dotaskLists.forEach((item,index) =>{
-									let timeRemain=new Date(item.LQTIME).getTime()+30*60*1000 -new Date().getTime();
+									let timeRemain=new Date(item.LQTIME).getTime()+80*60*1000 -new Date().getTime();
 									console.log(new Date(timeRemain).toLocaleString())
 									if(timeRemain>0){
 										item.TIME = new Date(timeRemain).toLocaleString().substring(13,18);
 									}else{
 										item.TIME="00:00";										
 									}
-									_this.$set(_this.dotaskLists,index,_this.dotaskLists[index]);//将修改后的值赋给dotasklists
+									_this.$set(_this.dotaskLists,index,_this.dotaskLists[index]);//将修改后的值赋给dotasklists确保time响应
 								});
 								if(_this.dotaskLists.every((item)=>{
 									return item.TIME=="00:00";
@@ -562,7 +557,7 @@
 							id:id,
 							type
 						},
-					}).then((res)=>{							
+					}).then((res)=>{						
 						if(res.data.Status=="success"){
 							_this.taskClassFirst();//更新领取列表
 							_this.dotaskFirst();//更新做任务列表
@@ -586,7 +581,7 @@
 						},
 					}).then((res)=>{									
 						if(res.data.Status=="success"){
-							let taskarr=res.data.Data
+							let taskarr=res.data.Data;
 							taskarr.shift();
 							_this.taskContentObj=taskarr;
 							this.doTaskShow=false;
@@ -679,42 +674,43 @@
 					});
 				},
 				handletouchmove(event){
-					// this.nearControl();
+					_this.imgJump=false;
+					// this.latitudeData=this.view.center.latitude;
+					// this.longitudeData=this.view.center.longitude;
+					// let updatelayer=this.map.layers.items[4];//标记图层
+					// let updateEdit={
+					// 		updateFeatures:[{
+					// 			"geometry":{
+					// 				type: 'point',
+					// 				longitude: _this.longitudeData, // 经度116.29845,39.95933
+					// 				latitude: _this.latitudeData, // 纬度
+					// 			},
+					// 			"attributes":{
+					// 			   "ObjectID":1,
+					// 			}
+					// 		}]
+					// 	};
+					// updatelayer.applyEdits(updateEdit)
+					// .then(function(editsResult){})				
 				},
-				nearControl(){
+				handletouchmove2(event){
+					this.imgJump=true;
+				},
+				nearControl(newval){
 					// if(!_this.doTaskShow){
+						//传坐标发送请求获取附近任务
 						this.latitudeData=this.view.center.latitude;
 						this.longitudeData=this.view.center.longitude;
-						let updatelayer=this.map.layers.items[4];//标记图层
-						const updateEdit={
-								updateFeatures:[{
-									"geometry":{
-										type: 'point',
-										longitude: _this.longitudeData, // 经度116.29845,39.95933
-										latitude: _this.latitudeData, // 纬度
-									},
-									"attributes":{
-									   // "ObjectID": updatelayer.source.items[0].attributes.ObjectID,
-									   "ObjectID":1,
-									}
-								}]
-							};				
-						updatelayer.applyEdits(updateEdit)
-						.then(function(editsResult){
-							console.log(_this.longitudeData);
-							// _this.map.layers.items[4].refresh();
-							//传坐标发送请求获取附近任务
-							// request2({
-							// 	url:'/api/lqrw/GetAroundRws',
-							// 	header: {'Authorization':uni.getStorageSync('token')},
-							// 	// data:{lon:_this.longitudeData,lat:_this.latitudeData}
-							// 	data:{lon:116.352036,lat:39.900413}
-							// }).then((res)=>{debugger								
-							// 	if(res.data.Status=="success"){
-							// 		_this.tasksClass=res.data.Data;
-							// 	}
-							// });
-						})
+						request2({
+							url:'/api/lqrw/GetAroundRws',
+							header: {'Authorization':uni.getStorageSync('token')},
+							// data:{lon:_this.longitudeData,lat:_this.latitudeData}
+							data:{lon:116.352036,lat:39.900413}
+						}).then((res)=>{debugger								
+							if(res.data.Status=="success"){
+								_this.tasksClass=res.data.Data;
+							}
+						});
 					// }
 				},
 				submitImgs(){
@@ -775,7 +771,8 @@
 				mpRadio,
 				mpInput,
 				mpSelect,
-				mpTextArea
+				mpTextArea,
+				mpDatePicker
 			},
 		}
 </script>

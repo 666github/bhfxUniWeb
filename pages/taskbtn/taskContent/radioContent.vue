@@ -1,6 +1,6 @@
 <template>
 <view class="formDiv formDiv2">
-	<b>{{consinfo.title}}:</b>
+	<b>{{consinfo.title}}：</b>
 	<radio-group @change="radioChange">
 		<label v-for="(item,index) in consinfo.labels" :key="index"  class="radioLabel">
 			<radio :value="item" /><text>{{item}}</text>

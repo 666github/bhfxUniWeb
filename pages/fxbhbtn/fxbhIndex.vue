@@ -135,7 +135,7 @@
 			</view>
 			<view class="formDiv">
 				<view><b>变化详情：（大于15字）</b></view>
-				<textarea  placeholder="请输入您的详细描述" class="formTextarea" v-model="formdata.BHREMARK" />				
+				<textarea  placeholder="请输入您的详细描述" class="formTextarea" v-model="formdata.BHREMARK" maxlength="200" />				
 			</view>
 			<view class="submitBtns">
 				<button class="submitBtn" type="primary" @click="submitImgs">提交</button>
@@ -450,7 +450,7 @@
 							});
 							esriUI.style.display='block';
 							// _this.popupShow2=val;
-						},600);
+						},800);
 					}else{
 						// _this.popupShow2=val;console.log(this.popupShow,val,_this.popupShow2);
 					}				
@@ -470,11 +470,11 @@
 			filters:{
 				getTime2(timestr){
 					let yy = new Date(timestr).getFullYear();
-					let mm = new Date().getMonth()+1<10 ? '0'+(new Date().getMonth()+1) : (new Date().getMonth()+1);
-					let dd = new Date().getDate()<10 ? '0'+new Date().getDate() : new Date().getDate();
-					let hh = new Date().getHours()<10 ? '0'+new Date().getHours() : new Date().getHours();
-					let mf = new Date().getMinutes()<10 ? '0'+new Date().getMinutes() : new Date().getMinutes();
-					let ss = new Date().getSeconds()<10 ? '0'+new Date().getSeconds() : new Date().getSeconds();
+					let mm = new Date(timestr).getMonth()+1<10 ? '0'+(new Date(timestr).getMonth()+1) : (new Date(timestr).getMonth()+1);
+					let dd = new Date(timestr).getDate()<10 ? '0'+new Date(timestr).getDate() : new Date(timestr).getDate();
+					let hh = new Date(timestr).getHours()<10 ? '0'+new Date(timestr).getHours() : new Date(timestr).getHours();
+					let mf = new Date(timestr).getMinutes()<10 ? '0'+new Date(timestr).getMinutes() : new Date(timestr).getMinutes();
+					let ss = new Date(timestr).getSeconds()<10 ? '0'+new Date(timestr).getSeconds() : new Date(timestr).getSeconds();
 					return  yy+'/'+mm+'/'+dd+' '+hh+':'+mf+':'+ss;
 				},
 			},
@@ -595,7 +595,7 @@
 						  // visible:false,
 						  outFields: ["*"],
 						  popupTemplate: _this.template,
-						  definitionExpression:`ID > ${_this.getTimediffer()} `,//剔除半年
+						  definitionExpression:`ID > ${_this.getTimediffer()} AND (AUDITRES IS NULL OR (AUDITRES = '1' AND PAYAUDIT IS NULL) ) `,//剔除半年
 						});
 						layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除
 						// layerfeaturePoi.renderer=this.unirender;
@@ -607,7 +607,7 @@
 							}
 							if(_this.showPageBars){
 								_this.view.hitTest(screenPoint).then(function(response){
-									if(response.results.length>0){					
+									if(response.results.length>0){		
 										let id=response.results[0].graphic.attributes.ID;
 										let checkState=response.results[0].graphic.attributes.AUDITRES;//审核状态
 										// _this.formdata.ID=id;
@@ -679,9 +679,9 @@
 								esriPopup.style.height='295px';
 								esriPopup.style.marginTop=(esriUI - 295)+'px';
 								esriPopup.onclick=function(event){
-									let classArr=event.target.classList;
+									let classArr=event.target.classList;console.log(event,classArr)
 									if(classArr.length>1){
-										for (let classname of classArr) {
+										for (let classname of classArr) {console.log(classname)
 											if(classname=="esri-icon-close"){//关闭弹框
 												_this.popupShow=false;
 											}										
@@ -700,6 +700,9 @@
 											_this.helpControlerr();
 										}
 									}
+									if(classArr.length==1 && classArr[0]=='esri-popup__button'){//点击关闭父级时
+										_this.popupShow=false;
+									}
 								};
 							},2000)
 						})
@@ -717,6 +720,7 @@
 							.then(([Query])=>{
 								const query=new Query();
 								query.where= "OBJECTID = '"+objectIdstr +"'";
+								query.outFields =["*"];
 								_this.map.layers.items[5].queryFeatures(query).then(function(results){
 								  let checkState=results.features[0].attributes.AUDITRES;
 								  checkState==null?_this.checkstateShow=true:_this.checkstateShow=false;//
@@ -852,6 +856,7 @@
 							.then(([Query])=>{
 								const query=new Query();
 								query.where= "OBJECTID = '"+ objectIdstr +"'";
+								query.outFields =["*"];
 								_this.map.layers.items[5].queryFeatures(query).then(function(results){
 									_this.noGraphic=results.features[0];
 									_this.formdata.BHTYPE=results.features[0].attributes.BHTYPE;
@@ -892,12 +897,12 @@
 					 });
 					*/
 					this.modifyErrContent();
-					this.getTime();					
+					// this.getTime();					
 					this.xiugai=true;
 				},					
 				helpControlerr(){//纠错
 					this.modifyErrContent();
-				    // this.current=0;
+					// this.getTime();
 					this.xiugai=false;
 				},
 				newaddBtn(){
@@ -1066,7 +1071,7 @@
 							if(_this.addGraphic!=null){//修改有图形
 								_this.map.layers.items[5].applyEdits({
 									updateFeatures: [_this.addGraphic]
-								}).then(res=>{console.log(res.updateFeatureResults)
+								}).then(res=>{console.log(res.updateFeatureResults);
 								// let objectIdstr=res.updateFeatureResults[0].objectId;
 									_this.ismodifyGraphic();
 								});
@@ -1140,6 +1145,7 @@
 					this.checkstateShowerr=false;
 					this.map.layers.items[5].popupTemplate=_this.template2;//固定模板
 					this.xiugai=false;
+					this.addGraphic=null;//清空新增图形
 					request2({
 						url:'/api/bhfx/submitphotos',
 						method:"POST",
@@ -1161,7 +1167,7 @@
 							})
 						}
 						_this.map.layers.items[5].refresh();
-					})
+					});
 				},
 				submitCancel(){
 					this.showPageOne=true;

@@ -1,6 +1,6 @@
 <template>
 <view class="formDiv">
-	<b>{{consinfo.title}}:</b>
+	<b>{{consinfo.title}}：</b>
 	<select id="selectOne" v-model="bhstate">
 	  <option value =""></option>
 	  <option :value ="item" v-for="(item,index) in consinfo.labels" :key="index">{{item}}</option>

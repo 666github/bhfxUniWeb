@@ -15,7 +15,7 @@
 			</view>
 		</view>
 		<view>
-			<button type="primary" plain="true" class="bottomSubmit" @click="submitImgs">提现</button>
+			<button type="primary" plain="true" class="bottomSubmit" @click="getMoney">提现</button>
 		</view>
 	</view>
 </template>
@@ -40,11 +40,51 @@
 				request2({
 					url:'/api/wxuser/getwallet',
 					header: {'Authorization':uni.getStorageSync('token')},
-				}).then((res)=>{debugger
+				}).then((res)=>{
 					if(res.data.Status=="success"){//获取余额
 						_this.moneyData=res.data.Data;
 					}											
 				})
+			},
+			getMoney(){debugger
+			// https://blog.csdn.net/weixin_41262185/article/details/109384456
+				// this.$jweixin.chooseWXPay({
+				// 	timestamp: payJson.timeStamp,
+				// 	nonceStr: payJson.nonceStr,
+				// 	package: payJson.package,
+				// 	signType: payJson.signType,
+				// 	paySign: payJson.paySign,
+				// 	success: function (r) {
+				// 		alert('微信api：success')
+				// 		alert(r)
+				// 		this.$router.push({ name: 'Home'});
+				// 		// 支付成功后的回调函数
+				// 		if (r.errMsg == "chooseWXPay:ok") {
+				// 			alert('支付成功')
+				// 			this.$router.push({ name: 'Home'});
+				// 			//支付成功
+				// 			// _this.checkDetail(res.ordersNo);
+							 
+				// 		} else {
+				// 			alert('success支付失败')
+				// 			this.$router.push({ name: 'Home'});
+				// 			// _this.checkDetail(res.ordersNo);
+				// 			alert(r.errMsg,null);
+				// 		}
+				// 	},
+				// 	cancel: function(r) {
+				// 		alert('取消支付')
+				// 		this.$router.push({ name: 'Home'});
+				// 		//支付取消
+				// 		this.$route.push
+				// 		_this.checkDetail(res.ordersNo);
+				// 	},
+				// 	fail:function(r){
+				// 		alert('fail支付失败了')
+				// 		this.$router.push({ name: 'All_order_list'});
+				// 		//支付失败
+				// 	}
+				// });
 			}
 		}
 	}

@@ -24,8 +24,10 @@
 					<view class="processedInf">
 						<ul class='lists'>
 							<li v-for="item in processedInf" :key="item.OBJECTID" @click="graphicLocate(item.OBJECTID,'任务')">
-								变化类型：{{item.BHTYPE}}; 变换前：{{item.BHBEFORE}}; 变化后：{{item.BHAFTER}}; 单价：{{item.AMOUNT}};拒绝原因：{{item.REJECTRMK}}; 
-								变化详情：{{item.BHREMARK}}; 上传时间：{{item.SUNTIME}};
+								变化类型：{{item.BHTYPE}}; 变换前：{{item.BHBEFORE}}; 变化后：{{item.BHAFTER}}; 单价：{{item.AMOUNT}};
+								<span v-show="!(item.PAYAUDIT==1)">"拒绝原因："{{item.REJECTRMK}};</span>
+								变化详情：{{item.BHREMARK}}; 上传时间：{{item.SUNTIME}}; 审核备注：{{item.PAYAUDIT==1?item.REJRCTRMK:(item.AUDITRES=='2'?item.REJRCTRMK:item.PAYMEMO)}}
+								<span style='color: red;'>（审核{{item.PAYAUDIT==1 | resReject}}）</span>
 							</li>
 						</ul>
 					</view>
@@ -45,8 +47,10 @@
 					<view class="processedInf">
 						<ul class='lists'>
 							<li v-for="item in processedInf2" :key="item.OBJECTID" @click="graphicLocate(item.OBJECTID,item.TYPE)">
-								任务名称：{{item.NAME}}; 通过/拒绝：{{item.AUDITREMARK}}; 备注：{{item.NYREMARK}}; 单价：{{item.AMOUNT}};
-								审核时间：{{item.AUDITTIME}}; 上传时间：{{item.SUBTIME}};
+								任务名称：{{item.NAME}}; 审核备注：{{item.AUDITREMARK}}; 备注：{{item.NYREMARK}}; 单价：{{item.AMOUNT}};
+								<span v-show="!(item.PAYAUDIT==1)">"拒绝原因："{{item.REJECTRMK}};</span>
+								审核时间：{{item.AUDITTIME}}; 上传时间：{{item.SUBTIME}}; 审核备注：{{item.PAYAUDIT==1?item.REJRCTRMK:(item.AUDITRES==2?item.REJRCTRMK:item.PAYMEMO)}}
+								<span style='color: red;'>（审核{{item.PAYAUDIT==1 | resReject}}）</span>
 							</li>
 						</ul>
 					</view>
@@ -327,12 +331,16 @@
 							},								
 						]
 					},
+					guidstr:''
 				}
 			},
 			// components:{
 			// 	UniPagination
 			// },
-			mounted() {
+			filters:{
+				resReject(AUDITRES){
+					return AUDITRES==true?'通过':'拒绝';
+				}
 			},
 			beforeDestroy(){
 				if(this.view){
@@ -364,7 +372,7 @@
 					  timestamp:_this.resconfig.timestamp , // 必填，生成签名的时间戳
 					  nonceStr: _this.resconfig.nonceStr, // 必填，生成签名的随机串
 					  signature: _this.resconfig.signature,// 必填，签名
-					  jsApiList: ["getLocation"] ,// 必填，需要使用的JS接口列表
+					  jsApiList: ["getLocation","chooseWXPay"] ,// 必填，需要使用的JS接口列表
 					});
 					//this.$jweixin.miniProgram.getEnv(function(res){})
 				},(err)=>{
@@ -380,8 +388,15 @@
 						    // var accuracy = res.accuracy; // 位置精度
 							_this.longitudeData=Number(longitude);
 							_this.latitudeData=Number(latitude );
-							console.log(_this.longitudeData,_this.latitudeData);
-							_this.creatMapview();//创建地图
+							request2({
+								url:'/api/lqrw/GetOwnNoFinishedRw',
+								header: {'Authorization':uni.getStorageSync('token')}
+							}).then((res)=>{							
+								if(res.data.Status=="success"){//过滤要显示的任务
+									_this.guidstr=res.data.Data.map(item=>`'${item}'`).join(',');
+									_this.creatMapview();//创建地图
+								}
+							});
 						  },
 						  fail:function(err){alert('err');
 						  	console.log(JSON.stringify(err))
@@ -480,11 +495,11 @@
 						  url:"http://192.168.1.107:6080/arcgis/rest/services/FaXianBianHua/FaXianBianHuaWX2000/FeatureServer/0",
 						  // visible:false,
 						  outFields: ["*"],
-						  popupTemplate: _this.template,
-						  definitionExpression:`ID > ${_this.getTimediffer()} `,
+						  // popupTemplate: _this.template,
+						  definitionExpression:`ID > ${_this.getTimediffer()} AND (AUDITRES IS NULL OR (AUDITRES = '1' AND PAYAUDIT IS NULL) ) `,//显示半年内和未审核的（一未审，一通二未审）
 						});
 						// layerfeaturePoi.popupTemplate.overwriteActions = true;//zoom to按钮给去除
-						layerfeaturePoi.renderer=this.unirender;
+						// layerfeaturePoi.renderer=this.unirender;//配色
 						map.add(layerfeaturePoi);//发现变化图层
 						// const layerfeatureHouse = new FeatureLayer({
 						//    url:"http://jzhtmap.s3.natapp.cc/arcgis/rest/services/BianHuaFaXianWX/FaXianBianHuaWX2000/FeatureServer/0",
@@ -497,7 +512,8 @@
 						// map.addMany([layerfeaturePoi,layerfeatureHouse,layerfeatureRoad]);
 						const layertaskPoi = new FeatureLayer({
 						   url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/0",
-						   visible:false
+						   visible:false,
+						   definitionExpression:`GUID IN (${_this.guidstr}) OR STATUS = '1'`,
 						});
 						// layertaskPoi.definitionExpression = `STATUS ='1'`;//显示状态不是空的
 						// llayertaskPoi.renderer = {//配色所有
@@ -514,15 +530,18 @@
 						// };
 						const layertaskLine = new FeatureLayer({
 							url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/1",
-							visible:false
+							visible:false,
+							definitionExpression:`GUID IN (${_this.guidstr}) OR STATUS = '1'`,// 
 						});
 						const layertaskPolg = new FeatureLayer({
 							url:"http://192.168.1.107:6080/arcgis/rest/services/LQRW/FeatureServer/2",
 							// outFields: ["*"],
 							// popupTemplate: _this.template,
-							visible:false
+							visible:false,
+							definitionExpression:`GUID IN (${_this.guidstr}) OR STATUS = '1'`,
 						});
 						map.addMany([layertaskPoi,layertaskLine,layertaskPolg]);
+						/*
 						this.view.when(()=>{
 							setTimeout(()=>{
 								// document.querySelector('.esri-ui').style.width="70%";
@@ -545,7 +564,7 @@
 						});
 						_this.view.on('click',function(event){
 							_this.view.hitTest(event).then(function(response){
-								if(response.results.length>0){	debugger					
+								if(response.results.length>0){				
 									let id=response.results.length==1?response.results[0].graphic.attributes.ID:response.results[1].graphic.attributes.ID;									
 									//请求后台获取图片
 									request2({
@@ -597,7 +616,31 @@
 								}
 							})
 						})
+						*/
 					})
+				},
+				handletouchmove(event){
+					// this.latitudeData=newval.latitude;
+					// this.longitudeData=newval.longitude;
+					this.latitudeData=this.view.center.latitude;
+					this.longitudeData=this.view.center.longitude;
+					let updatelayer=this.map.layers.items[4];//标记图层
+					let updateEdit={
+							updateFeatures:[{
+								"geometry":{
+									type: 'point',
+									longitude: _this.longitudeData, // 经度116.29845,39.95933
+									latitude: _this.latitudeData, // 纬度
+								},
+								"attributes":{
+								   "ObjectID":1,
+								}
+							}]
+						};
+					updatelayer.applyEdits(updateEdit)
+					.then(function(editsResult){
+						console.log(_this.longitudeData,editsResult.updateFeatureResults[0],updatelayer);					
+					})				
 				},
 				popupPage(){
 					setTimeout(function(){						
@@ -702,7 +745,7 @@
 				helpControl(){//弹出帮助信息
 					uni.showModal({	
 						title: '帮助信息',					
-					    content:`1.使用流程：授权登录注册授权。\n2.注意事项：网络畅通。\n3.奖金支付：领取任务，按时完成，获取奖金。\n4.奖金提现：提现到微信零钱。
+					    content:`1.使用流程：注册并登录授权。\n2.注意事项：网络畅通。\n3.奖金支付：领取任务，按时完成，获取奖金。\n4.奖金提现：提现到微信零钱。
 								`,
 						showCancel: false,						
 						confirmText: '关闭'
@@ -823,7 +866,7 @@
 										  color: [226, 119, 40,0.1],
 										  style: "solid",
 										  outline: {  // autocasts as SimpleLineSymbol
-											color: "red",
+											color: "black",
 											width: 1
 										  }
 										},

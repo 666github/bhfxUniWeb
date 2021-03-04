@@ -1,7 +1,7 @@
 <template>
 <view class="formDiv" >
-	<view><b>{{consinfo.title}}:</b></view>
-	<textarea :placeholder="consinfo.placeholder" class="formTextarea" v-model="bhfxReamark" />
+	<view><b>{{consinfo.title}}：</b></view>
+	<textarea :placeholder="consinfo.placeholder" class="formTextarea" v-model="bhfxReamark" maxlength="200"/>
 </view>
 </template>
 
