@@ -531,7 +531,7 @@
 							_this.dotaskLists=res.data.Data;
 							let timerun=setInterval(()=>{//倒计时
 								_this.dotaskLists.forEach((item,index) =>{
-									let timeRemain=new Date(item.LQTIME).getTime()+80*60*1000 -new Date().getTime();
+									let timeRemain=new Date(item.LQTIME).getTime()+30*60*1000 -new Date().getTime();
 									console.log(new Date(timeRemain).toLocaleString())
 									if(timeRemain>0){
 										item.TIME = new Date(timeRemain).toLocaleString().substring(13,18);
